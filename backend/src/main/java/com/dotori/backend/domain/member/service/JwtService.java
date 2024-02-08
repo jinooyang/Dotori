@@ -60,7 +60,7 @@ public class JwtService {
 			.withSubject(ACCESS_TOKEN_SUBJECT)
 			.withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod)) // 토큰 만료 시간 설정
 			.withClaim(EMAIL_CLAIM, email)
-			.withClaim(ROLE_CLAIM, role)
+			.withClaim(ROLE_CLAIM, "ROLE_" + role)
 			.sign(Algorithm.HMAC512(secretKey));
 	}
 
@@ -118,7 +118,7 @@ public class JwtService {
 			return Optional.ofNullable(JWT.require(Algorithm.HMAC512(secretKey))
 				.build() // 반환된 빌더로 JWT verifier 생성
 				.verify(accessToken) // accessToken을 검증하고 유효하지 않다면 예외 발생
-				.getClaim(EMAIL_CLAIM) // claim(Emial) 가져오기
+				.getClaim(EMAIL_CLAIM) // claim(Email) 가져오기
 				.asString());
 		} catch (Exception e) {
 			log.error("액세스 토큰이 유효하지 않습니다.");
@@ -148,15 +148,6 @@ public class JwtService {
 	public Optional<String> extractroleFromAccessToken(HttpServletRequest request) {
 		return extractAccessToken(request)
 			.flatMap(this::extractRole);
-	}
-
-	public String createAndStoreRefreshToken(String email) {
-		String refreshToken = createRefreshToken(); // 리프레시 토큰 생성
-
-		// Redis에 리프레시 토큰 저장
-		redisService.saveRefreshToken(email, refreshToken, refreshTokenExpirationPeriod, TimeUnit.MILLISECONDS);
-
-		return refreshToken;
 	}
 
 	/**

@@ -22,6 +22,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -64,6 +65,8 @@ class VideoControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	private String accessToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTcwOTQ5NjA0NSwiZW1haWwiOiJtb29uYWJjZDhAZ21haWwuY29tIiwicm9sZSI6IlVTRVIifQ.LtD4Thnmvcfdag6P6YIbfD01-QXaqJSNhV2yMou8Bc7sCqRpAvKkpHDCb5RF9ioI-NltOv86WAGGltEvrqj30g";
+
 	@BeforeEach
 	public void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()) // 스프링 시큐리티와 함께 MockMvc 설정
@@ -94,9 +97,10 @@ class VideoControllerTest {
 			.roomMembers(new ArrayList<>())
 			.build());
 
+		MockCookie cookie = new MockCookie("accessToken", accessToken);
 		// when
 		SceneVideoSaveRequest sceneVideoSaveRequest = new SceneVideoSaveRequest(savedRoom.getRoomId(), 1, "savedPath");
-		mockMvc.perform(post("/api/videos/scenes")
+		mockMvc.perform(post("/api/videos/scenes").cookie(cookie)
 				.contentType(APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(sceneVideoSaveRequest)))
 			.andExpect(status().isCreated())
@@ -113,7 +117,8 @@ class VideoControllerTest {
 	@ParameterizedTest()
 	@ArgumentsSource(SceneVideoSaveArgumentProvider.class)
 	void saveSceneVideo_fail(SceneVideoSaveRequest sceneVideoSaveRequest) throws Exception {
-		mockMvc.perform(post("/api/videos/scenes")
+		MockCookie cookie = new MockCookie("accessToken", accessToken);
+		mockMvc.perform(post("/api/videos/scenes").cookie(cookie)
 				.contentType(APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(sceneVideoSaveRequest)))
 			.andExpect(status().isBadRequest())

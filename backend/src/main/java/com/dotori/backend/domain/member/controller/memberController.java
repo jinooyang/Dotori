@@ -1,5 +1,6 @@
 package com.dotori.backend.domain.member.controller;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,6 +63,8 @@ public class memberController {
 				Map<String, Object> memberInfo = new HashMap<>();
 				memberInfo.put("nickName", member.getNickname());
 				memberInfo.put("email", member.getEmail());
+				memberInfo.put("memberId", member.getMemberId());
+				memberInfo.put("profileImg", member.getProfileImg());
 
 				return ResponseEntity.ok(memberInfo);
 			} else {
@@ -70,21 +75,37 @@ public class memberController {
 		}
 	}
 
-	// @PostMapping("/logout")
-	// public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-	// 	// JWT 토큰 추출
-	// 	Optional<String> accessToken = jwtService.extractAccessToken(request);
-	//
-	// 	accessToken.ifPresent(token -> {
-	// 		// 쿠키 제거
-	// 		jwtService.removeAccessToken(response);
-	//
-	// 		// Refresh Token 제거
-	// 		jwtService.extractEmail(token).ifPresent(redisService::removeRefreshToken);
-	// 	});
-	//
-	// 	return ResponseEntity.ok("로그아웃완료");
-	// }
+	@PostMapping("/reAccessToken")
+	public ResponseEntity<?> reAccessToken(HttpServletResponse response, @RequestParam("email") String email) throws
+		IOException {
+
+		String redisrefreshToken = redisService.getRefreshToken(email).get();
+		if (redisrefreshToken != null) {
+			if (redisService.isBlacklisted(redisrefreshToken)) {
+				response.sendError(HttpStatus.UNAUTHORIZED.value(), "만료된 refresh 토큰입니다. 다시로그인해주세요");
+			}
+			Optional<Member> membertemp = memberRepository.findByEmail(email);
+			if (membertemp.isPresent()) {
+				String mysqlrefreshToken = membertemp.get().getRefreshToken();
+				if (mysqlrefreshToken.equals(redisrefreshToken)) {
+					String accessToken = jwtService.createAccessToken(email, "ROLE_USER"); //서비스확장시 role 부여수정필요
+					jwtService.sendAccessToken(response, accessToken);
+					return ResponseEntity.ok("AccessToken:" + accessToken);
+				} else {
+					return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+						.body("유효하지않은 접근입니다. 다시 로그인해주세요.");
+				}
+			} else {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body("등록된사용자가아닙니다.");
+			}
+
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body("만료된 refresh 토큰입니다. 다시 로그인해주세요.");
+		}
+
+	}
 
 	@PutMapping("/update_nickname")
 	public ResponseEntity<?> updateNickname(HttpServletRequest request,

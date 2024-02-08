@@ -66,7 +66,18 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 		// redis에 RefreshToken이 있는 경우는, AccessToken이 만료되어 요청한 경우밖에 없다.
 		// 따라서, 위의 경우를 제외하면 추출한 refreshToken은 모두 null
 		// 액세스 토큰에서 이메일 추출
+		// accesstoken 만료여부체크
+		Optional<String> accessTokenOptional = jwtService.extractAccessToken(request);
+		if (accessTokenOptional.isPresent()) {
+			String accessToken = accessTokenOptional.get();
+			if (!jwtService.isTokenValid(accessToken)) {
+				//만료되었으면
+				log.info("진행체크용");
+				sendUnauthorizedResponse(response, "AccessTokenExpired");
+				return;
 
+			}
+		}
 		//세션을 사용하지않으므로 모든요청마다 security context에 authentication객체를 넣어줘야함
 		Optional<String> email = jwtService.extractEmailFromAccessToken(request);
 		Optional<String> role = jwtService.extractroleFromAccessToken(request);
@@ -74,8 +85,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 		log.info("role:{}", role);
 		if (email.isPresent() && role.isPresent()) {
 			Member member = memberRepository.findByEmail(email.get()).orElse(null);
-
-			SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.get());
+			SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.get());
 			List<GrantedAuthority> authorities = Collections.singletonList(authority);
 
 			// Authentication 객체 생성
@@ -84,34 +94,24 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
 
-		// 이메일을 기반으로 Redis에서 리프레쉬 토큰 가져오기
-		String refreshToken = email.flatMap(redisService::getRefreshToken)
-			.filter(jwtService::isTokenValid)
-			.orElse(null);
-
-		// 리프레시 토큰이 reids에 존재했다면, 사용자가 AccessToken이 만료되어서
-		// RefreshToken까지 보낸 것이므로 리프레시 토큰이 DB의 리프레시 토큰과 일치하는지 and redis 블랙리스트에 등록된 토큰이 아닌지 판단 후,
-		// 일치한다면 AccessToken을 재발급해준다.
-
-		if (refreshToken != null) {
-			// 블랙리스트에 있는지 확인
-			if (redisService.isBlacklisted(refreshToken)) {
-				response.sendError(HttpStatus.UNAUTHORIZED.value(), "유효하지않은 refresh 토큰입니다. 다시시도해주세요");
-				return;
+		// accesstoken 만료여부체크
+		if (accessTokenOptional.isPresent()) {
+			String accessToken = accessTokenOptional.get();
+			if (jwtService.isTokenValid(accessToken)) {
+				filterChain.doFilter(request, response);
 			}
-			checkRefreshTokenAndMakeAccessToken(response, request);
-			filterChain.doFilter(request, response);
-			return; // RefreshToken을 보낸 경우에는 AccessToken을 재발급 하고 인증 처리는 하지 않게 하기위해 바로 return으로 필터 진행 막기
+		} else {
+			response.sendError(HttpStatus.UNAUTHORIZED.value(), "액세스토큰이 없습니다");
 		}
 
-		// RefreshToken이 없거나 유효하지 않다면, AccessToken을 검사하고 인증을 처리하는 로직 수행
-		// AccessToken이 없거나 유효하지 않다면, 인증 객체가 담기지 않은 상태로 다음 필터로 넘어가기 때문에 403 에러 발생
-		// AccessToken이 유효하다면, 인증 객체가 담긴 상태로 다음 필터로 넘어가기 때문에 인증 성공
-		if (refreshToken == null) {
-			checkAccessTokenAndAuthentication(request);
-			filterChain.doFilter(request, response);
-		}
+	}
 
+	private void sendUnauthorizedResponse(HttpServletResponse response, String errorMessage) throws IOException {
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write("{\"error\": \"" + errorMessage + "\"}");
+		response.getWriter().flush();
 	}
 
 	/**
@@ -181,4 +181,5 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 				.ifPresent(email -> memberRepository.findByEmail(email)
 				));
 	}
+
 }

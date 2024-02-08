@@ -45,6 +45,9 @@ public class Member extends BaseTimeEntity {
 	@Column(length = 100, name = "profile_img")
 	private String profileImg;
 
+	@Column(length = 255, name = "refresh_token")
+	private String refreshToken;
+
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
@@ -72,10 +75,16 @@ public class Member extends BaseTimeEntity {
 		this.profileImg = updateProfileImg;
 	}
 
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+
 	@Builder
-	public Member(String nickname, String profileImg) {
+	public Member(Long memberId, String nickname, String profileImg, String refreshToken) {
+		this.refreshToken = refreshToken;
 		this.nickname = nickname;
 		this.profileImg = profileImg;
+		this.memberId = memberId;
 	}
 }
 

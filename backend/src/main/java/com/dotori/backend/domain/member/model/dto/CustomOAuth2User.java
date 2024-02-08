@@ -16,14 +16,18 @@ import lombok.Getter;
 @Getter
 public class CustomOAuth2User extends DefaultOAuth2User {
 
+	private final Long memberId;
 	private final String email;
 	private final Role role;
+	private final String refreshtoken;
 
 	public CustomOAuth2User(Collection<? extends GrantedAuthority> authorities,
-		Map<String, Object> attributes, String nameAttributeKey,
-		String email, Role role) {
+		Map<String, Object> attributes, String nameAttributeKey, Long memberId,
+		String email, Role role, String refreshtoken) {
 		super(authorities, attributes, nameAttributeKey);
+		this.memberId = memberId;
 		this.email = email;
 		this.role = role;
+		this.refreshtoken = refreshtoken;
 	}
 }

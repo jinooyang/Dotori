@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -56,6 +57,8 @@ class BookControllerTest {
 	@Autowired
 	private WebApplicationContext context;
 
+	private String accessToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTcwOTQ5NjA0NSwiZW1haWwiOiJtb29uYWJjZDhAZ21haWwuY29tIiwicm9sZSI6IlVTRVIifQ.LtD4Thnmvcfdag6P6YIbfD01-QXaqJSNhV2yMou8Bc7sCqRpAvKkpHDCb5RF9ioI-NltOv86WAGGltEvrqj30g";
+
 	@BeforeEach
 	public void setup() {
 		mockMvc = MockMvcBuilders
@@ -86,9 +89,9 @@ class BookControllerTest {
 
 		bookRepository.save(book1);
 		bookRepository.save(book2);
-
+		MockCookie cookie = new MockCookie("accessToken", accessToken);
 		//when
-		mockMvc.perform(get("/api/books")).andExpect(status().isOk())
+		mockMvc.perform(get("/api/books").cookie(cookie)).andExpect(status().isOk())
 			.andExpect(content().contentType(APPLICATION_JSON))
 			.andExpect(jsonPath("$.books.size()").value(2L))
 			.andExpect(jsonPath("$.books[0].title").value(book1.getTitle()))
@@ -129,7 +132,8 @@ class BookControllerTest {
 		//when
 
 		//then
-		mockMvc.perform(get("/api/books/{bookId}", book1.getBookId()))
+		MockCookie cookie = new MockCookie("accessToken", accessToken);
+		mockMvc.perform(get("/api/books/{bookId}", book1.getBookId()).cookie(cookie))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(APPLICATION_JSON))
 			.andExpect(jsonPath("$.book.title").value(book1.getTitle()))
@@ -180,8 +184,8 @@ class BookControllerTest {
 		scenes.add(scene2);
 		scenes.add(scene3);
 		sceneRepository.saveAll(scenes);
-
-		mockMvc.perform(get("/api/books/{bookId}/scenes", book.getBookId()))
+		MockCookie cookie = new MockCookie("accessToken", accessToken);
+		mockMvc.perform(get("/api/books/{bookId}/scenes", book.getBookId()).cookie(cookie))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(APPLICATION_JSON))
 			.andExpect(jsonPath("$.scenes.size()").value(3L))
@@ -246,8 +250,9 @@ class BookControllerTest {
 		scene.addScript(script1);
 		scene.addScript(script2);
 		sceneRepository.save(scene);
-
-		mockMvc.perform(get("/api/books/{bookId}/scenes/{sceneId}", book.getBookId(), scene.getSceneId()))
+		MockCookie cookie = new MockCookie("accessToken", accessToken);
+		mockMvc.perform(
+				get("/api/books/{bookId}/scenes/{sceneId}", book.getBookId(), scene.getSceneId()).cookie(cookie))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(APPLICATION_JSON))
 			.andExpect(jsonPath("$.sceneDetailDto").isNotEmpty())
@@ -322,8 +327,8 @@ class BookControllerTest {
 		scene.addScript(script1);
 		scene.addScript(script2);
 		sceneRepository.save(scene);
-
-		mockMvc.perform(get("/api/books/{bookId}/detail", book.getBookId()))
+		MockCookie cookie = new MockCookie("accessToken", accessToken);
+		mockMvc.perform(get("/api/books/{bookId}/detail", book.getBookId()).cookie(cookie))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(APPLICATION_JSON))
 			.andDo(print());
