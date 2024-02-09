@@ -1,6 +1,7 @@
 package com.dotori.backend.domain.video.service;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,29 +22,34 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class VideoMergeService {
 	private final File videoDirectory;
+	private final File sceneDirectory;
 
-	// TODO 방 생성, 채팅, 역할 동기화
-	public void videoMerge(VideoMergeRequest videoMergeRequest) {
+	public String videoMerge(VideoMergeRequest videoMergeRequest) {
 		log.info("[videoMerge] called");
+		String savedPath;
 		try {
-			merge(videoMergeRequest);
+			savedPath = merge(videoMergeRequest);
 		} catch (FrameGrabber.Exception | FrameRecorder.Exception e) {
 			log.error("영상 병합 중 exception 발생", e);
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		return savedPath;
 	}
 
-	private void merge(VideoMergeRequest videoMergeRequest) throws FrameGrabber.Exception, FrameRecorder.Exception {
+	private String merge(VideoMergeRequest videoMergeRequest) throws FrameGrabber.Exception, FrameRecorder.Exception {
 		List<FFmpegFrameGrabber> grabbers = new ArrayList<>();
 		for (String path : videoMergeRequest.getPaths()) {
-			FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(path);
+			FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(
+				sceneDirectory.toPath().resolve(path).toFile()
+			);
 			grabber.start();
 			grabbers.add(grabber);
 		}
 
+		Path savedPath = videoDirectory.toPath().resolve("output.mp4");
 		FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(
-			videoDirectory.toPath().resolve("output.mp4").toFile(),
+			savedPath.toFile(),
 			grabbers.get(0).getImageWidth(),
 			grabbers.get(0).getImageHeight()
 		);
@@ -63,5 +69,6 @@ public class VideoMergeService {
 		}
 		recorder.stop();
 		recorder.close();
+		return savedPath.toString();
 	}
 }

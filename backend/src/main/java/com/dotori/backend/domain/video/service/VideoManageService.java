@@ -2,15 +2,21 @@ package com.dotori.backend.domain.video.service;
 
 import static com.dotori.backend.domain.video.model.VideoMapper.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dotori.backend.domain.member.model.entity.Member;
+import com.dotori.backend.domain.member.model.entity.MemberVideo;
 import com.dotori.backend.domain.room.model.entity.Room;
 import com.dotori.backend.domain.video.model.dto.VideoDto;
 import com.dotori.backend.domain.video.model.entity.SceneVideo;
 import com.dotori.backend.domain.video.model.entity.Video;
+import com.dotori.backend.domain.video.repository.MemberVideoRepository;
 import com.dotori.backend.domain.video.repository.SceneVideoRepository;
 import com.dotori.backend.domain.video.repository.VideoRepository;
 
@@ -23,6 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 public class VideoManageService {
 	private final VideoRepository videoRepository;
 	private final SceneVideoRepository sceneVideoRepository;
+	private final MemberVideoRepository memberVideoRepository;
+
+	@Transactional
+	public VideoDto saveVideo(String path) {
+		return toVideoDto(videoRepository.save(
+			Video.builder()
+				.path(path)
+				.build()
+		));
+	}
 
 	@Transactional
 	public VideoDto getVideo(Long videoId) {
@@ -40,5 +56,24 @@ public class VideoManageService {
 				.path(savedPath)
 				.build()
 		);
+	}
+
+	@Transactional
+	public List<SceneVideo> getSceneVideoByRoom(Room room) {
+		return sceneVideoRepository.findALlByRoom(room);
+	}
+
+	@Transactional
+	public void saveMemberVideos(List<Member> members, Video video, Long bookId) {
+		List<MemberVideo> memberVideos = members.stream()
+			.map(member -> MemberVideo
+				.builder()
+				.member(member)
+				.video(video)
+				.bookId(bookId)
+				.build()
+			).collect(Collectors.toList());
+
+		memberVideoRepository.saveAll(memberVideos);
 	}
 }

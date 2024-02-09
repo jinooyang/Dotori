@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dotori.backend.domain.video.model.dto.MergeSceneVideoRequest;
 import com.dotori.backend.domain.video.model.dto.VideoSceneUploadRequest;
 import com.dotori.backend.domain.video.model.dto.request.SceneVideoSaveRequest;
 import com.dotori.backend.domain.video.service.VideoService;
@@ -70,6 +71,15 @@ public class VideoController {
 	) {
 		log.info("[saveSceneVideo] called");
 		videoService.saveSceneVideo(sceneVideoSaveRequest);
+		return ResponseEntity.status(CREATED).build();
+	}
+
+	@PostMapping("/scenes/merge")
+	private ResponseEntity<Void> mergeSceneVideos(
+		@Validated @RequestBody MergeSceneVideoRequest mergeSceneVideoRequest
+	) {
+		log.info("[saveSceneVideo] called");
+		videoService.mergeSceneVideo(mergeSceneVideoRequest.getRoomId());
 		return ResponseEntity.status(CREATED).build();
 	}
 }

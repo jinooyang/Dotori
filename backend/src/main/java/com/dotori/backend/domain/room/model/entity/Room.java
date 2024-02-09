@@ -35,7 +35,7 @@ public class Room extends BaseTimeEntity {
 	@GeneratedValue(strategy = IDENTITY) // auto_increment
 	private Long roomId;
 
-	@ManyToOne(fetch = LAZY)
+	@ManyToOne
 	@JoinColumn(name = "book_id", nullable = false)
 	private Book book;
 
