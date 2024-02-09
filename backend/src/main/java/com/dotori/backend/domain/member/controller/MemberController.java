@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/members")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequiredArgsConstructor
-public class memberController {
+public class MemberController {
 
 	private final JwtService jwtService;
 	private final MemberRepository memberRepository;

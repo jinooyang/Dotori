@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import com.dotori.backend.domain.book.model.dto.BookDto;
 import com.dotori.backend.domain.book.model.entity.Book;
 import com.dotori.backend.domain.book.repository.BookRepository;
+import com.dotori.backend.domain.member.model.entity.Member;
+import com.dotori.backend.domain.member.repository.MemberRepository;
 import com.dotori.backend.domain.room.model.dto.RoomDto;
 import com.dotori.backend.domain.room.model.dto.RoomInitializationDto;
 import com.dotori.backend.domain.room.model.entity.Room;
@@ -38,14 +40,17 @@ public class RoomServiceImpl implements RoomService {
 	private final RoomMemberRepository roomMemberRepository;
 	private final BookRepository bookRepository;
 
+	private final MemberRepository memberRepository;
+
 	@Autowired
 	public RoomServiceImpl(RoomRepository roomRepository,
 		RoomMemberRepository roomMemberRepository,
-		BookRepository bookRepository
+		BookRepository bookRepository, MemberRepository memberRepository
 	) {
 		this.roomRepository = roomRepository;
 		this.roomMemberRepository = roomMemberRepository;
 		this.bookRepository = bookRepository;
+		this.memberRepository = memberRepository;
 	}
 
 	@Override
@@ -140,12 +145,12 @@ public class RoomServiceImpl implements RoomService {
 		);
 
 		// member id에 해당하는 멤버를 방 참여 멤버로 등록합니다.
-		// Member member = memberRepository.findById(memberId);
-		// RoomMember roomMember = RoomMember.builder()
-		// 	.member(member)
-		// 	.room(room)
-		// // 	.build();
-		// roomMemberRepository.save(roomMember);
+		Member member = memberRepository.findById(memberId).get();
+		RoomMember roomMember = RoomMember.builder()
+			.member(member)
+			.room(room)
+			.build();
+		roomMemberRepository.save(roomMember);
 
 		// 방 참여 인원을 갱신합니다.
 		room.setJoinCnt(room.getJoinCnt() + 1);

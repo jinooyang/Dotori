@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import com.dotori.backend.domain.member.model.dto.CustomOAuth2User;
 import com.dotori.backend.domain.member.model.entity.Member;
+
+import com.dotori.backend.domain.member.repository.MemberRepository;
 import com.dotori.backend.domain.member.service.JwtService;
 import com.dotori.backend.domain.member.service.RedisService;
 
@@ -28,7 +30,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final JwtService jwtService;
 	private final RedisService redisService;
-	private final com.dotori.backend.domain.member.repository.MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
