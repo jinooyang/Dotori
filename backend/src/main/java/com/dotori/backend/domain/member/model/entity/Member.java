@@ -5,12 +5,17 @@ import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -58,8 +63,8 @@ public class Member extends BaseTimeEntity {
 	@Column(name = "social_id")
 	private String socialId;
 
-	@OneToOne(fetch = LAZY, mappedBy = "member", cascade = ALL)
-	private RoomMember roomMember;
+	@OneToMany(fetch = LAZY, mappedBy = "member", cascade = ALL)
+	private List<RoomMember> roomMembers = new ArrayList<>();
 
 	// 유저 권한 설정 메소드
 	public void authorizeUser() {

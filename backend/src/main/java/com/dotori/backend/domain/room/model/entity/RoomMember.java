@@ -36,7 +36,7 @@ public class RoomMember extends BaseTimeEntity {
 	@Column(name = "avatar_id")
 	private Long avatarId;
 
-	@OneToOne(fetch = LAZY)
+	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
