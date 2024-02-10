@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -64,31 +64,29 @@ public class SecurityConfig {
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 
-			.addFilterBefore(new JwtAuthenticationProcessingFilter(jwtService, memberRepository, redisService),
-				AnonymousAuthenticationFilter.class)
+			// .addFilterBefore(jwtAuthenticationProcessingFilter(), AnonymousAuthenticationFilter.class)
 			// URL별 권한 관리 옵션
 			.authorizeRequests()
+			.mvcMatchers("*/members/status")
+			.permitAll()
 			// 기본 페이지, css, image, js 하위 폴더에 있는 자료들은 모두 접근 가능
-			.antMatchers("/",
-				"/css/**", "/images/**", "/js/**",
-				"/favicon.ico", "/resources/**", "/static/**", "/error")
+			.antMatchers(
+				"/", "/css/**", "/images/**", "/js/**",
+				"/favicon.ico", "/resources/**", "/static/**", "/error",
+				"/login/**", "/oauth/**", "/oauth2.0/**"
+			)
 			.permitAll()
-			// 로그인은 항상 접근가능
-			.antMatchers("/login/**", "/oauth/**", "/oauth2.0/**")
-			// .antMatchers("**")
-			.permitAll()
+			// // 로그인은 항상 접근가능
 
 			// api 제한
 			.antMatchers("/api/members/detail", "/api/members/update_nickname", "/api/members/update_profileimg")
 			.hasRole("USER")
-			// .anyRequest()
-			// .authenticated() // 위의 경로 이외에는 모두 인증된 사용자만 접근 가능
 
 			// 페이지접근 제한
-			// .antMatchers("/my-page", "/my-page/info", "/my-page/collection", "/my-page/avatar")
-			// .hasRole("USER")
-			// .anyRequest()
-			// .authenticated() // 위의 경로 이외에는 모두 인증된 사용자만 접근 가능
+			.antMatchers("/my-page", "/my-page/info", "/my-page/collection", "/my-page/avatar")
+			.hasRole("USER")
+			.anyRequest()
+			.authenticated() // 위의 경로 이외에는 모두 인증된 사용자만 접근 가능
 
 			//예외핸들러
 			.and()
@@ -104,8 +102,10 @@ public class SecurityConfig {
 			.deleteCookies("JSESSIONID") // 쿠키 삭제
 
 			.and()
+			.addFilterAfter(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
 			//소셜 로그인 설정
 			.oauth2Login()
+
 			.successHandler(oAuth2LoginSuccessHandler) // 성공시 Handler 설정
 			.failureHandler(oAuth2LoginFailureHandler) // 소셜 로그인 실패 시 핸들러 설정
 			.userInfoEndpoint()
@@ -123,7 +123,6 @@ public class SecurityConfig {
 	 * FormLogin(기존 스프링 시큐리티 로그인)과 동일하게 DaoAuthenticationProvider 사용
 	 * UserDetailsService는 커스텀 LoginService로 등록
 	 * 또한, FormLogin과 동일하게 AuthenticationManager로는 구현체인 ProviderManager 사용(return ProviderManager)
-	 *
 	 */
 
 	@Bean
