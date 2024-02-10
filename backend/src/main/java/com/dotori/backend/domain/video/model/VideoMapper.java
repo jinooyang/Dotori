@@ -6,6 +6,7 @@ import com.dotori.backend.domain.video.model.entity.Video;
 public class VideoMapper {
 	public static Video toVideo(VideoDto videoDto) {
 		return Video.builder()
+			.videoId(videoDto.getVideoId())
 			.path(videoDto.getPath())
 			.build();
 	}
