@@ -7,6 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.dotori.backend.domain.room.model.entity.RoomMember;
 
 public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
-
 	Optional<RoomMember> findByRoomRoomIdAndMemberMemberId(Long roomId, Long memberId);
 }

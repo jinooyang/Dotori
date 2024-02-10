@@ -25,11 +25,15 @@ public interface RoomService {
 		OpenViduJavaClientException,
 		OpenViduHttpException;
 
-	boolean checkJoinPossible(OpenVidu openvidu, Long roomId) throws Exception;
+	void checkJoinPossible(OpenVidu openvidu, Long roomId) throws Exception;
 
 	void addMemberToRoom(Long roomId, Long memberId);
 
 	void removeMemberFromRoom(OpenVidu openvidu, Long roomId, Long memberId);
 
 	void updateRoom(Long roomId, RoomDto roomInfo);
+
+	Room getRoom(Long roomId);
+
+	void removeExpiredRooms(List<Session> activeSessions);
 }
