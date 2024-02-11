@@ -12,8 +12,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.dotori.backend.domain.member.model.Enum.SocialType;
-import com.dotori.backend.domain.member.model.dto.CustomOAuth2User;
-import com.dotori.backend.domain.member.model.dto.OAuth2Attributes;
+import com.dotori.backend.domain.member.model.dto.auth.CustomOAuth2User;
+import com.dotori.backend.domain.member.model.dto.auth.OAuth2Attributes;
 import com.dotori.backend.domain.member.model.entity.Member;
 import com.dotori.backend.domain.member.repository.MemberRepository;
 

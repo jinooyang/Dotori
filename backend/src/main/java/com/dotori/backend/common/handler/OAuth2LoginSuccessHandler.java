@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.dotori.backend.domain.member.model.dto.CustomOAuth2User;
+import com.dotori.backend.domain.member.model.dto.auth.CustomOAuth2User;
 import com.dotori.backend.domain.member.model.entity.Member;
 
 import com.dotori.backend.domain.member.repository.MemberRepository;

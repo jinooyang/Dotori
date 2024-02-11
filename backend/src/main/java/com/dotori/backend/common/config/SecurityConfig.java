@@ -79,7 +79,7 @@ public class SecurityConfig {
 			// // 로그인은 항상 접근가능
 
 			// api 제한
-			.antMatchers("/api/members/detail", "/api/members/update_nickname", "/api/members/update_profileimg")
+			.antMatchers("/api/members/detail", "/api/members/update_nickname", "/api/members/update_profileimg", "/api/members/{memberId}/videos")
 			.hasRole("USER")
 
 			// 페이지접근 제한
