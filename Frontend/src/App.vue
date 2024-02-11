@@ -1,19 +1,21 @@
 <template>
-  <Header/>
+  <!-- <Header/> -->
   <router-view />
-  <Footer/>
+  <!--  <Footer/>-->
 </template>
 
 <script setup>
-  import Header from 'components/CommonComponents/Header.vue';
+  // import Header from 'components/CommonComponents/Header.vue';
   import Footer from 'components/CommonComponents/Footer.vue';
 </script>
 <script>
-import { defineComponent } from 'vue';
+  import {defineComponent, onMounted} from 'vue';
 
-export default defineComponent({
-  name: 'App',
-});
+  export default defineComponent({
+    name: 'App',
+  });
+
+
 </script>
 <style>
   @font-face {
@@ -30,6 +32,7 @@ export default defineComponent({
   .text-brand {
     color: #C7A96E !important;
   }
+
   .bg-brand {
     background: #C7A96E !important;
   }

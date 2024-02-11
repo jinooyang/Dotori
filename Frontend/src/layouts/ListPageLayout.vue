@@ -1,7 +1,6 @@
 <template>
-
+  <Header/>
   <q-layout style="position: relative">
-
     <q-drawer
       show-if-above
       :width='250'
@@ -66,6 +65,7 @@
     description: '안녕하세요 ~',
   };
 import Header from 'components/CommonComponents/Header.vue';
+
 
 
 </script>

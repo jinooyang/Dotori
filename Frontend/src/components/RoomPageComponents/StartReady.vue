@@ -4,38 +4,52 @@
   import {useOpenViduStore} from 'stores/openvidu';
   import {storeToRefs} from 'pinia';
 
-  const props = defineProps({
-    roomInfo: Object,
-  });
-
   const router = useRouter();
   const btnValue = ref(false);
   const openViduStore = useOpenViduStore();
-  const {playerList,isHost,roomInfo,memberId} = storeToRefs(openViduStore);
-  const {session,updateRoom} = openViduStore;
+  const {bookDetail, playerList, isHost, roomInfo, memberId, myRole} = storeToRefs(openViduStore);
+  const {session, updateRoom} = openViduStore;
   const canMoveWaitingRoom = ref(false);
 
-  watch(canMoveWaitingRoom, (newVal,oldVal) => {
-    if (newVal){
+  watch(canMoveWaitingRoom, (newVal, oldVal) => {
+    if (newVal) {
       moveRecording();
     }
-  })
+  });
 
+  const checkRole = () => {
+    const player = playerList.value.find(user => user.memberId === memberId.value);
+    return player.roleIndex !== 5;
+  }
 
   const updateState = () => {
-    const currentUser = playerList.value.find(user => user.memberId === props.memberId);
-    if (currentUser) {
-      currentUser.readyState = true;
+    if (!checkRole()) {
+      alert('역할을 선택해주세요!');
+      return;
+    }
+    const player = playerList.value.find(user => user.memberId === memberId.value);
+    if (player) {
+      player.readyState = true;
       btnValue.value = true;
       sendingReadyData.value.playerList = playerList.value;
       sendReadyInfoToOpenVidu();
       alert('곧 시작합니다. 잠시만 기다려주세요!');
     }
-  }
+  };
 
   const checkReadyState = () => {
-    const allReady = playerList.value.every(user => user.memberId === props.memberId || user.readyState)
-    if (allReady) {
+    if (!checkRole()) {
+      alert('역할을 선택해주세요!');
+      return;
+    }
+
+    let readyCnt = 0;
+    playerList.value.forEach((user) => {
+      if (user.memberId === memberId.value) user.readyState = true;
+      if (user.readyState) readyCnt++;
+    });
+
+    if (readyCnt === playerList.value.length) {
       updateRoom(true)
         .then(() => {
           sendMoveInfoToOpenVidu();
@@ -43,10 +57,17 @@
         })
         .catch((error) => {
           console.error(error);
-        })
+        });
+    } else {
+      alert('모든 친구들이 준비할 때까지 기다려주세요!');
     }
-  }
+  };
   const moveRecording = () => {
+    playerList.value.forEach((user) => {
+      if (user.memberId === memberId.value) {
+        myRole.value = bookDetail.value.roles[user.roleIndex].roleId;
+      }
+    });
     router.push('/recording');
   };
 
@@ -63,6 +84,7 @@
       })
         .then(() => {
           resolve('준비 상태 전송 성공');
+
         })
         .catch(error => {
           reject(error);
@@ -90,7 +112,6 @@
   session.on('signal:update-ready', (event) => {
     const receivedData = JSON.parse(event.data);
     playerList.value = receivedData.playerList;
-    // console.log(playerList.value);
   });
 
   // 녹화방으로 이동하라는 이벤트를 수신하면 방 참여자들은 모두 녹화방으로 이동한다.
@@ -98,9 +119,6 @@
     roomInfo.value.isRecording = true;
     canMoveWaitingRoom.value = true;
   });
-
-
-
 
 
 </script>
@@ -150,7 +168,7 @@
 <style scoped>
 
   .start-btn {
-  //background: #35daa0; //color: white; font-family: NPSfontBold;
+    //background: #35daa0; //color: white; font-family: NPSfontBold;
     font-size: 3.5em;
     color: #6E4E1F;
     background: white;
@@ -169,7 +187,7 @@
   .background-yellow {
     background: white;
     border-radius: 20px 20px 20px 20px;
-  //border: dashed #cc765a 5px;
+    //border: dashed #cc765a 5px;
   }
 
   .background-white {

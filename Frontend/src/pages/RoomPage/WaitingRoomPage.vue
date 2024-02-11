@@ -1,4 +1,5 @@
 <template>
+  <Header/>
   <div class='row'>
     <div class='col-10 offset-1'>
       <div class='row'>
@@ -9,7 +10,7 @@
           <PlayerList></PlayerList>
         </div>
         <div class='col-4 q-pa-sm'>
-          <BookInfo :bookInfo='bookInfo'></BookInfo>
+          <BookInfo :bookInfo='bookDetail.book'></BookInfo>
         </div>
       </div>
       <div class='row'>
@@ -17,13 +18,14 @@
           <RoomChat :playerList='playerList' :memberId='memberId'></RoomChat>
         </div>
         <div class='col-4 q-pa-sm'>
-          <StartReady :roomInfo='roomInfo'></StartReady>
+          <StartReady></StartReady>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
+  import Header from 'components/CommonComponents/Header.vue';
   import PlayerList from 'components/RoomPageComponents/PlayerList.vue';
   import BookInfo from 'components/RoomPageComponents/BookInfo.vue';
   import StartReady from 'components/RoomPageComponents/StartReady.vue';
@@ -34,10 +36,10 @@
   import {storeToRefs} from 'pinia';
 
   const openViduStore = useOpenViduStore();
-  const {roomInitializationParam,playerList,isHost,memberId} = storeToRefs(openViduStore);
+  const {memberInfo,roomInfo,playerList,isHost,memberId,bookDetail} = storeToRefs(openViduStore);
   const {session} = openViduStore;
-  const bookInfo = roomInitializationParam.value.bookInfo;
-  const roomInfo = roomInitializationParam.value.roomInfo;
+
+  const props = defineProps({memberId:Object});
 
   const sendingIncomingData = ref({
     player: null,
@@ -45,6 +47,7 @@
 
   const sendingPlayerData = ref({
     playerList: null,
+    roleList: null,
   });
 
   const sendIncomingInfoToOpenVidu = () => {
@@ -79,13 +82,13 @@
     });
   };
 
-  // 방 참여자가 발생하면 방에 있던 모든 참여자들은 playerList를 갱신하여 반영한다.
+  // 방 참여자가 발생하면 방에 있던 모든 참여자들은 정보를 반영한다.
   session.on('signal:player-incoming', (event) => {
     const receivedData = JSON.parse(event.data);
     if (!isHost.value) {
       playerList.value = receivedData.playerList;
-      // 만약 들어오기 전에 role을 변경하고 있다면 roleList도 같이 보내야함
-      // room joinCnt 갱신
+      bookDetail.value.roles = receivedData.roleList;   // 방에 들어오기 전 선택된 역할 정보 반영
+      roomInfo.value.joinCnt = playerList.value.length;
     }
   });
 
@@ -95,17 +98,23 @@
     if (isHost.value) {
       playerList.value.push(receivedData.player);
       sendingPlayerData.value.playerList = playerList.value;
+      sendingPlayerData.value.roleList = bookDetail.value.roles;
       sendPlayerInfoToOpenVidu();
+      roomInfo.value.joinCnt++;
     }
   });
 
   onMounted(() => {
 
+    bookDetail.value.roles.forEach((role) => {
+      role['selected'] = false;
+    })
+
     const player = {
-      name: '김싸피',
+      name: memberInfo.value.nickName,
       memberId: memberId.value,
-      profileImg: 'src/assets/MyPageImages/iupic.jpg',
-      roleName: '김싸피',
+      profileImg: 'src/assets/MyPageImages/winter.png',
+      roleName: '역할 선택하기',
       roleIndex: 5,
       readyState: false,
     };

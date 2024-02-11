@@ -1,4 +1,5 @@
 <template>
+  <Header/>
     <div class="bg-brown-3">
         <div class="q-pa-md">
             <q-btn color="teal" @click="showLoading" label="Show Loading" />
@@ -9,6 +10,7 @@
 <script setup>
     import {useQuasar} from 'quasar';
     import {onBeforeUnmount} from 'vue';
+    import Header from 'components/CommonComponents/Header.vue';
 
     const quasar = useQuasar();
     let timer;

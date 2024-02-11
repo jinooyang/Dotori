@@ -90,3 +90,9 @@ $breakpoint-lg-min: map-get($sizes, "lg") !default;
 $breakpoint-lg-max: (map-get($sizes, "xl") - 0.02) !default;
 
 $breakpoint-xl-min: map-get($sizes, "xl") !default;
+
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap');
+
+body{
+  font-family: 'Black Han Sans', sans-serif;
+}

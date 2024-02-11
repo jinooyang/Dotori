@@ -2,7 +2,7 @@
   <!--  <hr style='border: solid yellow 3px' />-->
   <div class='row'>
 
-    <h2 class='npsfont q-mx-lg q-mt-lg q-mb-none col-10 offset-2' style='color: #282828'>원하는 캐릭터로<br /> 마법처럼 변신!</h2>
+    <h2 class='npsfont q-mx-lg q-mt-lg q-mb-none col-10 offset-2' style='color: #282828'>동화책 속<br /> 주인공으로 변신!</h2>
     <!--    <h4 class='npsfont q-my-none'>역할에 맞는 수많은 3D 아바타를 통해 아이들의 창의력과 집중력을 향상시킵니다</h4>-->
     <div class='col-8 offset-2'>
       <div class='row'>
@@ -15,40 +15,41 @@
           <div style='width: 400px;height: 400px;' class='relative-position'>
             <div class='absolute-bottom-left flex justify-center items-center'
                  style='transform:translate(-10px,-80px)'>
-              <img src='src/assets/MyPageImages/winter.png'
+              <img src='src/assets/DotoriImages/jerry2d.png'
                    width='210px'
                    height='210px'
                    style='
-                    object-fit: cover;
-                    border-radius: 50%;
+                    object-fit: contain;
+                    /*border-radius: 50%;*/
                     /*border: 4px solid #00fff7;*/
                     /*padding : 4px;*/
-                    background-color: #ffeac2;
+                    /*background-color: #ffeac2;*/
                     '
                    class='q-ma-none q-pa-none ani-l' />
             </div>
             <div class='absolute-bottom-right flex justify-center items-center'
                  style='transform:translate(-50px,-180px)'>
-              <img src='src/assets/MyPageImages/iupic.jpg'
+              <img src='src/assets/DotoriImages/lion2d.png'
                    width='210px'
                    height='210px'
-                   style='object-fit: cover; border-radius: 50%;
+                   style='object-fit: contain;
+                   /*border-radius: 50%;*/
                     /*border: 4px solid #fff100;*/
                     /*padding : 4px;*/
-                    background-color: #ffeac2;
+                    /*background-color: #ffeac2;*/
                     ' class='q-ma-none q-pa-none ani-tr' />
             </div>
             <div class='absolute-bottom-right flex justify-center items-center'
-                 style='transform:translate(-15px,10px)'>
-              <img src='src/assets/MyPageImages/karina.jpg'
+                 style='transform:translate(-45px,-20px)'>
+              <img src='src/assets/DotoriImages/racoon2d.png'
                    width='230px'
                    height='230px'
                    style='
-                    object-fit: cover;
-                    border-radius: 50%;
+                    object-fit: contain;
+                    /*border-radius: 50%;*/
                     /*border: 4px solid #eeadff;*/
                     /*padding : 4px;*/
-                    background-color: #ffeac2;
+                    /*background-color: #ffeac2;*/
                     '
                    class='q-ma-none q-pa-none ani-bl' />
             </div>
@@ -57,7 +58,7 @@
           </div>
         </div>
         <div class='col-6 flex justify-center items-center'>
-          <h4 class='npsfont'>마법같은 이야기와 함께<br />창의력과 상상력을 키워보세요!</h4>
+          <h4 class='npsfont'>친구들과 함께<br />연극을 시작해봐요!</h4>
 
         </div>
 
@@ -116,8 +117,8 @@
     }
 
     50% {
-      left: 20px;
-      top: -20px;
+      left: 15px;
+      top: -15px;
     }
 
     100% {

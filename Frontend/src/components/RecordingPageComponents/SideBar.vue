@@ -6,21 +6,24 @@
       style='height: 210px; max-width: 100%;'
     >
       <div class='flex no-wrap'>
-        <SideBarComponent v-for='page in 6' :page-no='page' :cur-page='props.curPage' @moveToPage='moveToPage' />
+        <SideBarComponent v-for='scene in ovstore.bookDetail.scenes' :scene="scene" :cur-page='props.curPage' @moveToPage='moveToPage' />
       </div>
     </q-scroll-area>
   </div>
 </template>
 <script setup>
   import SideBarComponent from 'components/RecordingPageComponents/SideBarComponent.vue';
-  import {ref} from 'vue';
+  import {onMounted, ref} from 'vue';
+  import {useOpenViduStore} from 'stores/openvidu';
+  const ovstore = useOpenViduStore();
+  const allScenes = ref();
 
-  const props = defineProps({curPage: Number});
+  const props = defineProps({curPage: Number, currentScene: Object});
   const emit = defineEmits(['moveToPage']);
   const moveToPage = (nextPage) => {
     // alert("move!");
     // props.curPage.value = nextPage;
-    emit('moveToPage',nextPage);
+    emit('moveToPage', nextPage);
   };
   const thumbStyle = {
     right: '1.5px',
@@ -50,7 +53,7 @@
   }
 
   .scene-short-info-container {
-  //border: black solid 1px;
+    //border: black solid 1px;
   }
 
   .scene-number-container {

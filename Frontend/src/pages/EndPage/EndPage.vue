@@ -1,4 +1,5 @@
 <template>
+  <Header/>
 <!--  <Header></Header>-->
   <!--  <div style="background: #d2fff7" class = "q-pa-lg row">-->
   <div class="q-pa-lg row">
@@ -23,8 +24,8 @@
         <h4 class="npsfont q-mb-md q-mt-none">결과는 마이페이지에서 확인하세요!</h4>
       </div>
       <div class="row flex justify-center">
-        <q-btn unelevated rounded color="my-green" class="q-mx-sm" size="1.5em" label="홈으로" />
-        <q-btn unelevated rounded color="my-green" class="q-mx-sm" size="1.5em" label="마이페이지" />
+        <q-btn unelevated rounded color="my-brown" class="q-mx-sm" size="1.5em" label="홈으로" />
+        <q-btn unelevated rounded color="my-brown" class="q-mx-sm" size="1.5em" label="마이페이지" />
       </div>
     </div>
   </div>
@@ -62,7 +63,7 @@
     font-family: 'NPSfontBold';
   }
 
-  .bg-my-green {
+  .bg-my-brown {
     background: #C7A96E !important;
   }
 

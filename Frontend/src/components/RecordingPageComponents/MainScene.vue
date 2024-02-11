@@ -5,27 +5,32 @@
   import {ref} from 'vue';
 
   const ovstore = useOpenViduStore();
-  const props = defineProps({curPage: Number});
-  const imagesrc = ref(ovstore.bookInfoList[props.curPage - 1].img);
+  const props = defineProps({curPage: Number, currentScene: Object});
+  // const imagesrc = ref(ovstore.bookInfoList[props.curPage - 1].img);
+
 </script>
 
 <template>
-  <div class='scene-info-container q-pa-sm'>
+
+  <div class='scene-info-container q-pa-sm' :class="{borderbrown:ovstore.onAir===0, borderred:ovstore.onAir===1}">
 
     <div class=' ' style='height: 100%;border-radius: 15px'>
       <div class='scene-background-container relative-position'>
         <q-img
           class='q-pa-xs'
-         :src='ovstore.bookInfoList[props.curPage - 1].img'
+          :src='props.currentScene.backgroundImage'
           :ratio='16/9'
           style='height: 100%; '
         />
-        <div class='flex justify-center absolute-bottom q-ma-none q-pa-none'>
-          <div v-if='ovstore.mainStreamManager' class='q-ma-none q-pa-none'>
-            <ov-video :stream-manager='ovstore.mainStreamManager' :id='ovstore.mainStreamManager.stream.streamId' />
+        <div class='flex justify-center items-center absolute-bottom q-ma-none q-pa-none'>
+          <div v-if='ovstore.mainStreamManager'>
+            <ov-video style="" :stream-manager='ovstore.mainStreamManager'
+                      :id='ovstore.mainStreamManager.stream.streamId' />
           </div>
-          <ov-video v-for='sub in ovstore.subscribers' :key='sub.stream.connection.connectionId' :stream-manager='sub'
-                    :id='sub.stream.streamId' />
+          <div v-for='sub in ovstore.subscribers' :key='sub.stream.connection.connectionId'>
+            <ov-video  :stream-manager='sub'
+                      :id='sub.stream.streamId' />
+          </div>
         </div>
         <div id='canvasDiv'></div>
       </div>
@@ -49,7 +54,17 @@
 
   .scene-info-container {
     height: 570px;
-  //border-radius: 15px; border: #C7A96E solid 6px;
+    //border-radius: 15px;
+
+  }
+
+  .borderbrown {
+    border: #C7A96E solid 6px;
+  }
+
+  .borderred {
+    border: red solid 6px;
+
   }
 
   .scene-background-container {

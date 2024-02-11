@@ -34,18 +34,21 @@
   import {onMounted, ref} from 'vue';
   import {useRouter} from 'vue-router';
   import {useOpenViduStore} from 'stores/openvidu';
-  import axios from 'axios';
+  import {localAxios} from 'src/axios/http-commons';
 
   export default {
     components: {EnterRoomComponent},
     setup() {
+      const axios = localAxios();
       const router = useRouter();
       const rooms = ref([]);
       const openViduStore = useOpenViduStore();
-      const {bookDetail} = storeToRefs(openViduStore);
+      const {roomInfo,roomId} = storeToRefs(openViduStore);
       const {getConnectionToken, connectToOpenVidu, addRoomMember} = openViduStore;
 
       const moveWaitingRoom = (room) => {
+        roomId.value = room.roomId;
+        roomInfo.value = room;
         router.push('/room');
       };
 
@@ -56,30 +59,11 @@
       // 방 목록 정보를 불러온다.
       const fetchRooms = async () => {
         try {
-          const response = await axios.get('http://localhost:8080/api/rooms');
+          const response = await axios.get('/api/rooms',{withCredentials: true});
           console.log('API Response:', response);
-          if (response.status === 200) {
-            rooms.value = response.data;
-          } else {
-            console.error('Failed to fetch rooms. Status:', response.status);
-          }
+          rooms.value = response.data;
         } catch (error) {
           console.error('Error fetching rooms:', error);
-        }
-      };
-
-      // 해당 방에 대한 책의 모든 정보(역할,책,장면)를 불러온다.
-      const fetchBookDetail = async (bookId) => {
-        try {
-          const response = await axios.get(`http://localhost:8080/api/books/${bookId}/detail`);
-          console.log('API Response:', response);
-          if (response.status === 200) {
-            bookDetail.value = response.data;
-          } else {
-            console.error('Failed to fetch books. Status:', response.status);
-          }
-        } catch (error) {
-          console.error('Error fetching books:', error);
         }
       };
 
@@ -89,9 +73,9 @@
           .then(() => {
             connectToOpenVidu()
               .then(() => {
-                addRoomMember()
+                addRoomMember(room.book)
                   .then(() => {
-                    fetchBookDetail(room.book.bookId);
+                    openViduStore.roomId = room.roomId;
                     moveWaitingRoom(room);
                   })
                   .catch((error) => {
@@ -108,7 +92,6 @@
         rooms,
         moveWaitingRoom,
         enterRoom,
-        bookDetail,
       };
     },
   };

@@ -74,7 +74,7 @@ const appendMessage = (nickname, message) => {
 
 
 <style scoped>
-.bg-my-green {
+.bg-my-brown {
   background: #35daa0 !important;
 }
 

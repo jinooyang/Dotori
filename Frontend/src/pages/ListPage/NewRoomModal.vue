@@ -6,25 +6,26 @@
         <div class='book row q-gutter-x-sm'>
           <!-- 왼쪽 칼럼   책 이미지 -->
           <div class='col-4 flex justify-center items-center q-pa-sm'
-               style='border: 5px solid #C7A96E; border-radius: 20px;height: 100%'>
-            <img :src="bookmodal.bookImg" alt='책'
-                 style='object-fit: fill;border-radius: 20px;'>
+               style='border: 5px solid #C7A96E; border-radius: 20px;height: 500px;'>
+            <img :src='bookDetail.book.bookImg' alt='책'
+                 style='height:100%;width:100%;object-fit: contain;border-radius: 20px;'
+            >
           </div>
           <!-- 오른쪽 칼럼-->
           <div class='book-info col-8 q-gutter-y-sm'>
             <!--            책 제목과 줄거리-->
-            <div style='border: 5px solid #C7A96E; border-radius: 20px;height: 50%' class='q-pa-sm'>
-              <div class='text-h5'>제목 : {{ bookmodal.title }}</div>
-              <div>저자 : {{ bookmodal.author }}</div>
+            <div style='border: 5px solid #C7A96E; border-radius: 20px;height: 246px;overflow: auto' class='q-pa-sm'>
+              <div class='text-h5'>제목 : {{ bookDetail.book.title }}</div>
+              <div>저자 : {{ bookDetail.book.author }}</div>
               <hr />
-              {{ bookmodal.summary }}
+              {{ bookDetail.book.summary }}
             </div>
             <!--            등장 인물-->
-            <div style='border: 5px solid #C7A96E; border-radius: 20px;height: 50%' class='q-pa-sm'>
+            <div style='border: 5px solid #C7A96E; border-radius: 20px;height: 246px' class='q-pa-sm'>
               <div class='text-h5'>역할 소개</div>
               <hr />
-              <div class='flex'>
-                <Character v-for='item in bookmodal.roleCnt' />
+              <div class='flex no-wrap' style='overflow:auto;'>
+                <Character :role='role' v-for='role in bookDetail.roles' />
               </div>
             </div>
           </div>
@@ -55,7 +56,7 @@
                   <div class='col-9 flex'>
                   </div>
                   <div class='col-3 flex justify-center'>
-                    <q-btn unelevated color='my-green' rounded label='방 만들기' @click='joinRoom'></q-btn>
+                    <q-btn unelevated color='my-brown' rounded label='방 만들기' @click='joinRoom'></q-btn>
                   </div>
                 </div>
 
@@ -76,33 +77,39 @@
   import {storeToRefs} from 'pinia';
   import {useRouter} from 'vue-router';
   import {useOpenViduStore} from 'stores/openvidu';
-  import {ref} from 'vue';
+  import {onMounted, ref} from 'vue';
+  import {QSpinnerHourglass, useQuasar} from 'quasar';
+  import {localAxios} from 'src/axios/http-commons';
 
-
+  const axios = localAxios();
+  const $q = useQuasar();
   const router = useRouter();
   const props = defineProps({bookmodal: Object});
   const moveWaitingRoom = () => {
+    isHost.value = true;
     router.push('/room');
   };
 
   const openViduStore = useOpenViduStore();
-  const {roomInfo} = storeToRefs(openViduStore);
-  const {createRoom, connectToOpenVidu, addRoomMember} = openViduStore;
+  const {roomInfo, bookDetail, minRole, isHost} = storeToRefs(openViduStore);
+  const {createRoom, connectToOpenVidu, addRoomMember, memberInfo} = openViduStore;
 
-  const fetchBooks = async () => {
+  onMounted(() => {
+    fetchBookRoles();
+  });
+
+  const fetchBookRoles = () => {
+    return new Promise(async (resolve, reject) => {
       try {
-        const response = await axios.get('http://localhost:8080/api/books');
+        const response = await axios.get(`/api/books/${props.bookmodal.bookId}`, {withCredentials: true});
         console.log('API Response:', response);
-        if (response.status === 200) {
-          books.value = response.data.books;
-        } else {
-          console.error('Failed');
-        }
+        bookDetail.value = response.data;
+        resolve();
       } catch (error) {
-        console.error('Error fetching books:', error);
+        reject(error);
       }
-    };
-
+    });
+  };
 
   const roomName = ref(null);
   const roomPassword = ref(null);
@@ -118,8 +125,18 @@
 
     roomInfo.value.title = roomName.value;
     roomInfo.value.password = roomPassword.value;
-    roomInfo.value.isPublic = isPrivate;
-    roomInfo.value.limitCnt = props.bookmodal.roleCnt;
+    roomInfo.value.isPublic = !isPrivate.value;
+    roomInfo.value.limitCnt = bookDetail.value.book.roleCnt;
+    //방을 생성한 사람은 본인의 memberId를 hostId로 저장한다
+    roomInfo.value.hostId = memberInfo.memberId;
+    isHost.value = true;
+
+    $q.loading.show({
+      message: '방을 만들고 있어요! 잠시만 기다려주세요!',
+      spinner: QSpinnerHourglass,
+      boxClass: 'bg-grey-2 text-grey-9',
+      spinnerColor: 'brown',
+    });
 
     createRoom(props.bookmodal)
       .then(() => {
@@ -127,12 +144,32 @@
           .then(() => {
             addRoomMember(props.bookmodal)
               .then(() => {
+                roomInfo.value.joinCnt++;
                 moveWaitingRoom();
+                $q.loading.hide();
               })
-              .catch()
+              .catch(()=> {
+                $q.loading.hide();
+                $q.notify({
+                  color: 'white',
+                  textColor: 'red-9',
+                  message: '문제가 생겼어요! 다시 방을 만들어 볼까요?',
+                  position: 'center',
+                  timeout: 500,
+                });
+              });
           })
-          .catch()
-      })
+          .catch(() => {
+            $q.loading.hide();
+            $q.notify({
+              color: 'white',
+              textColor: 'red-9',
+              message: '문제가 생겼어요! 다시 방을 만들어 볼까요?',
+              position: 'center',
+              timeout: 500,
+            });
+          });
+      });
   };
 </script>
 
@@ -150,7 +187,7 @@
   }
 
   .book-info-inner, .room-info-inner {
-    //border: dashed #cc765a 5px; border-radius: 20px;
+  //border: dashed #cc765a 5px; border-radius: 20px;
   }
 
   .book-info {
@@ -182,7 +219,7 @@
     margin: 100px;
   }
 
-  .bg-my-green {
+  .bg-my-brown {
     background: #C7A96E !important;
   }
 

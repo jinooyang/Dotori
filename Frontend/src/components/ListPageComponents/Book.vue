@@ -33,9 +33,7 @@
                      class='npsfont q-ma-none q-pa-none text-h6 '>시작
               </q-btn>
               <q-dialog v-model='dialog'>
-                <q-card-actions align='right' class='bg-white text-teal'>
-                  <q-btn flat label='OK' v-close-popup />
-                </q-card-actions>
+
                 <q-card style='width: 700vw; max-width: 80vw;'>
                   <q-card-actions align='right' class='bg-white text-teal'>
                     <q-btn flat icon='close' color='black' v-close-popup />

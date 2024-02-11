@@ -4,11 +4,11 @@
 </script>
 
 <template>
-  <div style='height: 100%' class='background-green q-pa-sm'>
+  <div style='height: 100%' class='background-brown q-pa-sm'>
 
     <div style='height: 100%' class='background-yellow q-pa-sm '>
-      <div class='column items-center'>
-        <img src='../../assets/BookImages/rabbitandturtle.jpg' class='bookimg q-pb-sm'>
+      <div class='column  flex justify-center items-center' style="width: 100%">
+        <img :src='props.bookInfo.bookImg' class='bookimg q-pb-sm' style="width: 100%;object-fit: fill;">
       </div>
       <hr class='q-ma-none' />
       <div class=' column q-pa-sm background-white' style="overflow: auto">
@@ -24,7 +24,7 @@
 </template>
 
 <style scoped>
-  .background-green {
+  .background-brown {
     background: #C7A96E;
     border-radius: 20px 20px 20px 20px;
 

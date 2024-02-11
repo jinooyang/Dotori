@@ -1,5 +1,9 @@
 <script setup>
-  const props = defineProps({roomInfo: Object});
+  import {useOpenViduStore} from 'stores/openvidu';
+  import {storeToRefs} from 'pinia';
+
+  const openViduStore = useOpenViduStore();
+  const {roomInfo} = storeToRefs(openViduStore);
 </script>
 
 <template>
@@ -12,7 +16,7 @@
         {{ roomInfo.title }}
       </h5>
       <h5 class='q-ma-none q-pr-md'>
-        <span v-if='props.roomInfo.isPublic'>공개방🔓</span>
+        <span v-if='roomInfo.isPublic'>공개방🔓</span>
         <span v-else>비공개방🔒</span>
       </h5></div>
   </div>

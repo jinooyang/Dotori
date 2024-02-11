@@ -34,8 +34,9 @@
 <script>
   import {onMounted, ref} from 'vue';
   import Book from 'components/ListPageComponents/Book.vue';
-  import axios from 'axios';
+  import {localAxios} from 'src/axios/http-commons';
 
+  const axios = localAxios();
   export default {
     components: {Book},
     setup() {
@@ -45,20 +46,11 @@
         fetchBooks();
       });
 
-      const enterBook = async (book) => {
-        await fetchBookDetails(book.bookId);
-        dialog.value = true;
-      };
-
       const fetchBooks = async () => {
         try {
-          const response = await axios.get('http://localhost:8080/api/books');
+          const response = await axios.get('/api/books',{withCredentials: true});
           console.log('API Response:', response);
-          if (response.status === 200) {
-            books.value = response.data.books;
-          } else {
-            console.error('Failed');
-          }
+          books.value = response.data.books;
         } catch (error) {
           console.error('Error fetching books:', error);
         }
@@ -66,7 +58,6 @@
 
       return {
         books,
-        enterBook,
         dialog: ref(false),
         maximizedToggle: ref(true),
       };

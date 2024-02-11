@@ -61,7 +61,15 @@ module.exports = configure(function (/* ctx */) {
             // analyze: true,
             env: {
                 VUE_APP_KAKAO_JS_KEY: 'f64a3357b4de741f1921dde6a43cfbc0',
-                VUE_APP_KAKAO_REDIRECT_URL: 'http://localhost:9000/kakaologin',
+                VUE_APP_KAKAO_REDIRECT_URL:
+                    'http://localhost:8080/login/oauth2/code/kakao',
+                VUE_APP_GOOGLE_CLIENT_ID:
+                    '831236545250-pcc05tuiq2o87jpolrvtce1v09gjmq9i.apps.googleusercontent.com',
+                VUE_APP_GOOGLE_REDIRECT_URL:
+                    'http://localhost:8080/login/oauth2/code/google',
+                VUE_APP_NAVER_CLIENT_ID: 'WduH_0zvRQwvM1pdpq2c',
+                VUE_APP_NAVER_REDIRECT_URL:
+                    'http://localhost:8080/login/oauth2/code/naver',
             },
             // rawDefine: {}
             // ignorePublicFolder: true,
@@ -98,7 +106,7 @@ module.exports = configure(function (/* ctx */) {
             // directives: [],
 
             // Quasar plugins
-            plugins: ['Loading'],
+            plugins: ['Loading', 'Notify'],
         },
 
         // animations: 'all', // --- includes all animations

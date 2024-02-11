@@ -10,114 +10,67 @@
         :columns="columns"
         row-key="index"
         virtual-scroll
-        v-model:pagination="pagination"
         :rows-per-page-options="[0]"
         class="npsfont"
       >
-        <template v-slot:header="props">
+        <template v-slot:body="props">
           <q-tr :props="props">
             <q-th
               v-for="col in props.cols"
               :key="col.name"
               :props="props"
-              style="font-size: 1.5em"
+              style="font-size: 15px"
             >
-              {{ col.label }}
+              <div v-if="col.name !== 'videoId'">
+                {{ col.value }}
+              </div>
+              <div v-else>
+                <a v-bind:href="`https://dotori.online/api/videos/${col.value}`">
+                  <q-btn outline icon="mdi-download-box" color="brown"/>
+                </a>
+              </div>
             </q-th>
           </q-tr>
         </template>
       </q-table>
-      <!--      title="Treats"-->
     </div>
 
   </q-page>
 </template>
 
 <script setup>
-  import Card from 'components/MyPageComponents/VideoCard.vue';
+  import {useOpenViduStore} from 'stores/openvidu';
+  import {localAxios} from 'src/axios/http-commons';
+  import {onMounted, ref} from 'vue';
+
+  const axios = localAxios()
 
   const columns = [
     {
       name: 'desc',
       required: true,
       label: '책 제목',
-      align: 'left',
-      field: row => row.name,
-      format: val => `${val}`,
-      sortable: true,
+      align: 'center',
+      headerStyle: 'font-size: 30px',
+      field: row => row.bookTitle,
     },
-    {name: 'title', align: 'left', label: '영상제목', field: 'title', sortable: true},
-    {name: 'date', align: 'left', label: '날짜', field: 'date', sortable: true},
-    {name: 'download', align: 'left', label: '다운로드', field: 'download', sortable: true},
-
-
-    // { name: 'fat', label: 'Fat (g)', field: 'fat', sortable: true },
-    // { name: 'carbs', label: 'Carbs (g)', field: 'carbs' },
-    // { name: 'protein', label: 'Protein (g)', field: 'protein' },
-    // { name: 'sodium', label: 'Sodium (mg)', field: 'sodium' },
-    // { name: 'calcium', label: 'Calcium (%)', field: 'calcium', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-    // { name: 'iron', label: 'Iron (%)', field: 'iron', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) }
+    {name: 'date', align: 'center', label: '날짜', headerStyle: 'font-size: 30px', field: row => row.createdAt},
+    {name: 'videoId', align: 'center', label: '다운로드', headerStyle: 'font-size: 30px', field: row => row.videoId},
   ];
+  const rows = ref([]);
 
-  const rows = [
-    {
-      name: '토끼와 거북이',
-      title: '2023-01-19_23:10:10_dotori',
-      date: '2023-01-19_23:10:10',
-    },
-    {
-      name: '토끼와 거북이',
-      title: '2023-01-19_23:10:10_dotori',
-      date: '2023-01-19_23:10:10',
-    },
-    {
-      name: '토끼와 거북이',
-      title: '2023-01-19_23:10:10_dotori',
-      date: '2023-01-19_23:10:10',
-    },
-    {
-      name: '토끼와 거북이',
-      title: '2023-01-19_23:10:10_dotori',
-      date: '2023-01-19_23:10:10',
-    },
+  onMounted(async () => {
+    axios.get(`/api/members/${sessionStorage.getItem('memberId')}/videos`)
+      .then((response) => {
+        console.log(response.data)
+        rows.value = response.data.videos
+      })
+      .catch((error) =>{
+        console.log(error);
+      });
 
+  })
 
-  ];
-</script>
-<script>
-
-
-  // // dummyData
-  // const dummyData = [
-  //   {
-  //     id: 1,
-  //     profileImagePath: '../assets/acorn_character_img.png',
-  //     title: '토끼와 거북이를 읽어보자1',
-  //     date: '2017-01-04',
-  //     downloadLink: 'https://cdn.quasar.dev/img/avatar.png',
-  //   },
-  //   {
-  //     id: 2,
-  //     profileImagePath: 'https://cdn.quasar.dev/img/avatar.png',
-  //     title: '토끼와 거북이를 읽어보자2',
-  //     date: '2017-01-04',
-  //     downloadLink: 'https://cdn.quasar.dev/img/avatar.png',
-  //   },
-  //   {
-  //     id: 3,
-  //     profileImagePath: 'https://cdn.quasar.dev/img/avatar.png',
-  //     title: '토끼와 거북이를 읽어보자3',
-  //     date: '2017-01-04',
-  //     downloadLink: 'https://cdn.quasar.dev/img/avatar.png',
-  //   },
-  //   {
-  //     id: 4,
-  //     profileImagePath: 'https://cdn.quasar.dev/img/avatar.png',
-  //     title: '토끼와 거북이를 읽어보자4',
-  //     date: '2017-01-04',
-  //     downloadLink: 'https://cdn.quasar.dev/img/avatar.png',
-  //   },
-  // ];
 
 </script>
 
