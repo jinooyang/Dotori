@@ -12,9 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.dotori.backend.common.config.PathProperty;
 import com.dotori.backend.domain.member.model.dto.auth.CustomOAuth2User;
 import com.dotori.backend.domain.member.model.entity.Member;
-
 import com.dotori.backend.domain.member.repository.MemberRepository;
 import com.dotori.backend.domain.member.service.JwtService;
 import com.dotori.backend.domain.member.service.RedisService;
@@ -27,10 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 //@Transactional
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
-
 	private final JwtService jwtService;
 	private final RedisService redisService;
 	private final MemberRepository memberRepository;
+	private final PathProperty pathProperty;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -63,6 +63,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 		//redis에 리프레쉬토큰저장
 		jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
 
-		response.sendRedirect("http://localhost:9000");
+		response.sendRedirect(pathProperty.getDOMAIN());
 	}
 }

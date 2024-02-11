@@ -50,6 +50,12 @@ jwt:
     expiration: ${REFRESH_EXPIRATION}
     header: ${REFRESH_HEADER}
 
+server:
+  port: ${SERVER_PORT}
+
+dotori:
+  domain: ${DOTORI_DOMAIN}
+
 logging:
   level:
     org:
