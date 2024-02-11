@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dotori.backend.domain.member.model.dto.GetMemberVideosResponse;
+import com.dotori.backend.domain.member.model.dto.ProfileImageUpdateRequest;
+import com.dotori.backend.domain.member.model.dto.ProfileImageUpdateResponse;
 import com.dotori.backend.domain.member.model.entity.Member;
 import com.dotori.backend.domain.member.repository.MemberRepository;
 import com.dotori.backend.domain.member.service.JwtService;
@@ -135,24 +138,12 @@ public class MemberController {
 		return ResponseEntity.ok("닉네임 변경완료.");
 	}
 
-	@PutMapping("/update_profileimg")
-	public ResponseEntity<?> updateProfileImg(HttpServletRequest request, @RequestParam String newProfileImg) {
+	@PutMapping(value = "/profile-image")
+	public ResponseEntity<ProfileImageUpdateResponse> updateProfileImg(HttpServletRequest request, @Validated ProfileImageUpdateRequest profileImageUpdateRequest) {
 		// JWT에서 이메일 추출
 		Optional<String> emailOpt = jwtService.extractEmailFromAccessToken(request);
-		if (!emailOpt.isPresent()) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-				.body("유효하지않거나 만료된 토큰입니다.");
-		}
 
-		// 사용자 정보 찾기 및 프로필사진 업데이트
-		String email = emailOpt.get();
-		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new EntityNotFoundException("해당이메일은 가입되지않은 이메일입니다: " + email));
-
-		member.updateProfileImg(newProfileImg);
-		memberRepository.save(member);
-
-		return ResponseEntity.ok("프로필사진 변경완료.");
+		return ResponseEntity.ok().body(new ProfileImageUpdateResponse(memberService.updateProfileImage(emailOpt.get(), profileImageUpdateRequest)));
 	}
 
 }

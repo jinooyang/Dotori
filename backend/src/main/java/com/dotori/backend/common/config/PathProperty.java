@@ -10,4 +10,7 @@ import lombok.Getter;
 public class PathProperty {
 	@Value("${dotori.domain}")
 	private String DOMAIN;
+
+	@Value("${images.path.profile.db}")
+	private String PROFILE_IMAGE_DB_PATH;
 }
