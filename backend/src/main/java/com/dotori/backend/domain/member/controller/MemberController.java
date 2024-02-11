@@ -15,17 +15,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dotori.backend.domain.member.model.dto.GetMemberVideosResponse;
 import com.dotori.backend.domain.member.model.entity.Member;
 import com.dotori.backend.domain.member.repository.MemberRepository;
 import com.dotori.backend.domain.member.service.JwtService;
+import com.dotori.backend.domain.member.service.MemberService;
 import com.dotori.backend.domain.member.service.RedisService;
 
 import lombok.RequiredArgsConstructor;
@@ -37,8 +39,8 @@ public class MemberController {
 
 	private final JwtService jwtService;
 	private final MemberRepository memberRepository;
-
 	private final RedisService redisService;
+	private final MemberService memberService;
 
 	@GetMapping("/status")
 	public ResponseEntity<?> getAuthStatus() {
@@ -72,6 +74,12 @@ public class MemberController {
 		} else {
 			return ResponseEntity.status(400).body("유효한 토큰을 찾을수없습니다");
 		}
+	}
+
+	@GetMapping("/{memberId}/videos")
+	public ResponseEntity<GetMemberVideosResponse> getMemberVideos(@PathVariable(name = "memberId") Long memberId){
+
+		return ResponseEntity.ok().body(new GetMemberVideosResponse(memberService.getMemberVideos(memberId)));
 	}
 
 	@PostMapping("/reAccessToken")
