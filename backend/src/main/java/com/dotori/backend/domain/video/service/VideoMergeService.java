@@ -12,6 +12,7 @@ import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.FrameRecorder;
 import org.springframework.stereotype.Service;
 
+import com.dotori.backend.common.FileUtil;
 import com.dotori.backend.domain.video.model.dto.request.VideoMergeRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 public class VideoMergeService {
 	private final File videoDirectory;
 	private final File sceneDirectory;
+
+	private File sceneVideoDirectory;
 
 	public String videoMerge(VideoMergeRequest videoMergeRequest) {
 		log.info("[videoMerge] called");
@@ -37,17 +40,24 @@ public class VideoMergeService {
 		return savedPath;
 	}
 
+	public void deleteMergedFile() {
+		FileUtil.deleteDirectory(sceneVideoDirectory);
+	}
+
 	private String merge(VideoMergeRequest videoMergeRequest) throws FrameGrabber.Exception, FrameRecorder.Exception {
 		List<FFmpegFrameGrabber> grabbers = new ArrayList<>();
+		File sceneVideo = null;
 		for (String path : videoMergeRequest.getPaths()) {
-			FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(
-				sceneDirectory.toPath().resolve(path).toFile()
-			);
+			sceneVideo = sceneDirectory.toPath().resolve(path).toFile();
+			FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(sceneVideo);
 			grabber.start();
 			grabbers.add(grabber);
 		}
+		if (sceneVideo != null) {
+			sceneVideoDirectory = sceneVideo.getParentFile();
+		}
 
-		Path savedPath = videoDirectory.toPath().resolve("output.mp4");
+		Path savedPath = videoDirectory.toPath().resolve(sceneVideoDirectory.getName() + ".mp4");
 		FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(
 			savedPath.toFile(),
 			grabbers.get(0).getImageWidth(),

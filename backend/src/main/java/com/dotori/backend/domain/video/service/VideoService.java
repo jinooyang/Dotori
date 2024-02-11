@@ -76,16 +76,22 @@ public class VideoService {
 		Room room = roomRepository.findById(roomId)
 			.orElseThrow(EntityNotFoundException::new);
 
-		List<String> savedScenePaths = videoManageService
-			.getSceneVideoByRoom(room)
-			.stream()
+		List<SceneVideo> sceneVideos = videoManageService.getSceneVideoByRoom(room);
+		List<String> paths = sceneVideos.stream()
 			.map(SceneVideo::getPath)
 			.collect(Collectors.toList());
 
-		String savedPath = videoMergeService.videoMerge(new VideoMergeRequest(savedScenePaths));
-
+		String savedPath = videoMergeService.videoMerge(new VideoMergeRequest(paths));
 		VideoDto savedVideoDto = videoManageService.saveVideo(savedPath);
 		saveMemberVideos(room.getRoomId(), savedVideoDto.getVideoId()); // TODO 비동기
+
+		deleteSceneVideos(sceneVideos);
+	}
+
+	@Transactional
+	public void deleteSceneVideos(List<SceneVideo> sceneVideos) {
+		videoMergeService.deleteMergedFile();
+		videoManageService.deleteSceneVideos(sceneVideos);
 	}
 
 	@Transactional

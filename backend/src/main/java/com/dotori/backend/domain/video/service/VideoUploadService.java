@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dotori.backend.common.FileUtil;
 import com.dotori.backend.domain.video.model.dto.VideoSceneUploadRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -102,14 +102,6 @@ public class VideoUploadService {
 	}
 
 	private void deleteChunkFiles(File file) {
-		log.info("[VideoService.deleteChunkFile] called");
-		if (file == null || file.delete()) {
-			log.info(file == null ? "파일이 존재하지 않습니다." : "{}: 파일이 삭제되었습니다.", file);
-			return;
-		}
-		Arrays.stream(file.listFiles())
-			.forEach(this::deleteChunkFiles);
-		file.delete();
-		log.info("[VideoService.deleteChunkFile] completed");
+		FileUtil.deleteDirectory(file);
 	}
 }

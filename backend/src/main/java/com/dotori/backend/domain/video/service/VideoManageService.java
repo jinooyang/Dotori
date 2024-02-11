@@ -64,6 +64,11 @@ public class VideoManageService {
 	}
 
 	@Transactional
+	public void deleteSceneVideos(List<SceneVideo> sceneVideos) {
+		sceneVideoRepository.deleteAllInBatch(sceneVideos);
+	}
+
+	@Transactional
 	public void saveMemberVideos(List<Member> members, Video video, Long bookId) {
 		List<MemberVideo> memberVideos = members.stream()
 			.map(member -> MemberVideo
