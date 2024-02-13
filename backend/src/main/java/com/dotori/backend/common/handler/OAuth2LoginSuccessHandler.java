@@ -50,7 +50,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 	private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
 		//로그인하면 이전토큰유무에상관없이 새로발급 토큰2개생성
 		String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), oAuth2User.getRole().name());
-		String refreshToken = jwtService.createRefreshToken();
+		String refreshToken = jwtService.createRefreshToken(oAuth2User.getEmail(), oAuth2User.getRole().name());
 		String email = oAuth2User.getEmail();
 		//mysql에 리프레쉬토큰 저장
 		Member member = memberRepository.findByEmail(email)
@@ -60,6 +60,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 		memberRepository.save(member);
 		//쿠키생성
 		jwtService.sendAccessToken(response, accessToken);
+		jwtService.sendRefreshToken(response, refreshToken);
 		//redis에 리프레쉬토큰저장
 		jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
 

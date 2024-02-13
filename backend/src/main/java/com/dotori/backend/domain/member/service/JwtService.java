@@ -67,11 +67,13 @@ public class JwtService {
 	/**
 	 * RefreshToken 생성
 	 */
-	public String createRefreshToken() {
+	public String createRefreshToken(String email, String role) {
 		Date now = new Date();
 		return JWT.create()
 			.withSubject(REFRESH_TOKEN_SUBJECT)
 			.withExpiresAt(new Date(now.getTime() + refreshTokenExpirationPeriod))
+			.withClaim(EMAIL_CLAIM, email)
+			.withClaim(ROLE_CLAIM, "ROLE_" + role)
 			.sign(Algorithm.HMAC512(secretKey));
 	}
 
@@ -86,8 +88,23 @@ public class JwtService {
 			.sameSite("Lax") // SameSite 설정
 			.build(); // 쿠키 생성
 
-		response.setHeader("Set-Cookie", cookie.toString()); // 생성된 쿠키를 응답 헤더에 추가
+		response.addHeader("Set-Cookie", cookie.toString()); // 생성된 쿠키를 응답 헤더에 추가
 		log.info("AccessToken 쿠키에 설정 완료");
+	}
+
+	/**
+	 * RefreshToken 쿠키로보내기
+	 */
+	public void sendRefreshToken(HttpServletResponse response, String refreshToken) {
+		ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+			.httpOnly(true) // JavaScript 접근 방지
+			// .secure(true) // HTTPS에서만 전송
+			.path("/api/members/reaccesstoken") // 쿠키 경로
+			.sameSite("Lax") // SameSite 설정
+			.build(); // 쿠키 생성
+
+		response.addHeader("Set-Cookie", cookie.toString()); // 생성된 쿠키를 응답 헤더에 추가
+		log.info("RefreshToken 쿠키에 설정 완료");
 	}
 
 	/**
@@ -101,6 +118,17 @@ public class JwtService {
 
 		return Arrays.stream(request.getCookies())
 			.filter(cookie -> "accessToken".equals(cookie.getName()))
+			.findFirst()
+			.map(Cookie::getValue);
+	}
+
+	public Optional<String> extractRefreshToken(HttpServletRequest request) {
+		if (request.getCookies() == null) {
+			return Optional.empty();
+		}
+
+		return Arrays.stream(request.getCookies())
+			.filter(cookie -> "refreshToken".equals(cookie.getName()))
 			.findFirst()
 			.map(Cookie::getValue);
 	}
@@ -150,6 +178,16 @@ public class JwtService {
 			.flatMap(this::extractRole);
 	}
 
+	public Optional<String> extractEmailFromRefreshToken(HttpServletRequest request) {
+		return extractRefreshToken(request)
+			.flatMap(this::extractEmail);
+	}
+
+	public Optional<String> extractroleFromRefreshToken(HttpServletRequest request) {
+		return extractRefreshToken(request)
+			.flatMap(this::extractRole);
+	}
+
 	/**
 	 * RefreshToken을 Redis에 저장(업데이트)
 	 */
@@ -170,6 +208,16 @@ public class JwtService {
 
 	public void removeAccessToken(HttpServletResponse response) {
 		Cookie cookie = new Cookie("accessToken", null);
+		cookie.setMaxAge(0);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setPath("/");
+		response.addCookie(cookie);
+		log.info("AccessToken 쿠키 제거");
+	}
+
+	public void removeRefreshToken(HttpServletResponse response) {
+		Cookie cookie = new Cookie("refreshToken", null);
 		cookie.setMaxAge(0);
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);

@@ -54,32 +54,28 @@ public class SecurityConfig {
 			.disable() // httpBasic 사용 X
 			.csrf()
 			.disable() // csrf 보안 사용 X
-			// .headers()
-			// .frameOptions()
-			// .disable()
-			// .and()
 
 			// 세션없는 stateless 환경
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 
-			// .addFilterBefore(jwtAuthenticationProcessingFilter(), AnonymousAuthenticationFilter.class)
 			// URL별 권한 관리 옵션
 			.authorizeRequests()
-			.mvcMatchers("*/members/status")
+			.mvcMatchers("*/members/status", "*/members/reaccesstoken", "*/members/detail")
 			.permitAll()
 			// 기본 페이지, css, image, js 하위 폴더에 있는 자료들은 모두 접근 가능
-			.antMatchers(
+			.antMatchers("*/members/reaccesstoken",
 				"/", "/css/**", "/images/**", "/js/**",
 				"/favicon.ico", "/resources/**", "/static/**", "/error",
 				"/login/**", "/oauth/**", "/oauth2.0/**"
 			)
 			.permitAll()
-			// // 로그인은 항상 접근가능
+			// 로그인은 항상 접근가능
 
 			// api 제한
-			.antMatchers("/api/members/detail", "/api/members/update_nickname", "/api/members/profile-image", "/api/members/{memberId}/videos")
+			.antMatchers("/api/members/update_nickname", "/api/members/profile-image",
+				"/api/members/{memberId}/videos")
 			.hasRole("USER")
 
 			// 페이지접근 제한
@@ -110,9 +106,6 @@ public class SecurityConfig {
 			.failureHandler(oAuth2LoginFailureHandler) // 소셜 로그인 실패 시 핸들러 설정
 			.userInfoEndpoint()
 			.userService(customOAuth2UserService);   // customUserService 설정
-
-		// 원래 스프링 시큐리티 필터 순서가 LogoutFilter 이후에 로그인 필터 동작
-		// 순서 : LogoutFilter -> JwtAuthenticationProcessingFilter -> CustomJsonUsernamePasswordAuthenticationFilter
 
 		return http.build();
 	}

@@ -18,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,7 +33,9 @@ import com.dotori.backend.domain.member.service.MemberService;
 import com.dotori.backend.domain.member.service.RedisService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
@@ -80,41 +81,44 @@ public class MemberController {
 	}
 
 	@GetMapping("/{memberId}/videos")
-	public ResponseEntity<GetMemberVideosResponse> getMemberVideos(@PathVariable(name = "memberId") Long memberId){
+	public ResponseEntity<GetMemberVideosResponse> getMemberVideos(@PathVariable(name = "memberId") Long memberId) {
 
 		return ResponseEntity.ok().body(new GetMemberVideosResponse(memberService.getMemberVideos(memberId)));
 	}
 
-	@PostMapping("/reAccessToken")
-	public ResponseEntity<?> reAccessToken(HttpServletResponse response, @RequestParam("email") String email) throws
+	@GetMapping("/reaccesstoken")
+	public ResponseEntity<?> reAccessToken(HttpServletRequest request, HttpServletResponse response) throws
 		IOException {
 
+		String refreshToken = jwtService.extractRefreshToken(request).orElse(null);
+
+		Optional<String> jwtemail = jwtService.extractEmailFromRefreshToken(request);
+		Optional<String> jwtrole = jwtService.extractroleFromRefreshToken(request);
+		String email = jwtemail.get();
+		String role = jwtrole.get();
+		log.info("role:{}", role);
+
 		String redisrefreshToken = redisService.getRefreshToken(email).get();
+		log.info("refreshToken:{}", refreshToken);
+		log.info("redisrefreshToken:{}", redisrefreshToken);
 		if (redisrefreshToken != null) {
 			if (redisService.isBlacklisted(redisrefreshToken)) {
 				response.sendError(HttpStatus.UNAUTHORIZED.value(), "만료된 refresh 토큰입니다. 다시로그인해주세요");
-			}
-			Optional<Member> membertemp = memberRepository.findByEmail(email);
-			if (membertemp.isPresent()) {
-				String mysqlrefreshToken = membertemp.get().getRefreshToken();
-				if (mysqlrefreshToken.equals(redisrefreshToken)) {
-					String accessToken = jwtService.createAccessToken(email, "ROLE_USER"); //서비스확장시 role 부여수정필요
+			} else {
+				if (refreshToken.equals(redisrefreshToken)) {
+					String accessToken = jwtService.createAccessToken(email, "USER"); //서비스확장시 role 부여수정필요
 					jwtService.sendAccessToken(response, accessToken);
-					return ResponseEntity.ok("AccessToken:" + accessToken);
+					return ResponseEntity.ok("accessToken:" + accessToken);
 				} else {
 					return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 						.body("유효하지않은 접근입니다. 다시 로그인해주세요.");
 				}
-			} else {
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.body("등록된사용자가아닙니다.");
 			}
-
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 				.body("만료된 refresh 토큰입니다. 다시 로그인해주세요.");
 		}
-
+		return ResponseEntity.ok("ok");
 	}
 
 	@PutMapping("/update_nickname")
@@ -139,11 +143,14 @@ public class MemberController {
 	}
 
 	@PutMapping(value = "/profile-image")
-	public ResponseEntity<ProfileImageUpdateResponse> updateProfileImg(HttpServletRequest request, @Validated ProfileImageUpdateRequest profileImageUpdateRequest) {
+	public ResponseEntity<ProfileImageUpdateResponse> updateProfileImg(HttpServletRequest request,
+		@Validated ProfileImageUpdateRequest profileImageUpdateRequest) {
 		// JWT에서 이메일 추출
 		Optional<String> emailOpt = jwtService.extractEmailFromAccessToken(request);
 
-		return ResponseEntity.ok().body(new ProfileImageUpdateResponse(memberService.updateProfileImage(emailOpt.get(), profileImageUpdateRequest)));
+		return ResponseEntity.ok()
+			.body(new ProfileImageUpdateResponse(
+				memberService.updateProfileImage(emailOpt.get(), profileImageUpdateRequest)));
 	}
 
 }
