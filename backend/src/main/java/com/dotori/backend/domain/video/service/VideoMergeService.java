@@ -66,6 +66,8 @@ public class VideoMergeService {
 		recorder.setFrameRate(grabbers.get(0).getFrameRate());
 		recorder.setVideoBitrate(grabbers.get(0).getVideoBitrate());
 		recorder.setAudioChannels(grabbers.get(0).getAudioChannels());
+		recorder.setAudioCodec(grabbers.get(0).getAudioCodec());
+		recorder.setVideoCodec(grabbers.get(0).getVideoCodec());
 		recorder.setFormat(grabbers.get(0).getFormat());
 		recorder.start();
 
