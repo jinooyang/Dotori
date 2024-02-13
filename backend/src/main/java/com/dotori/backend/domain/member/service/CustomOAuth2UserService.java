@@ -2,6 +2,7 @@ package com.dotori.backend.domain.member.service;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -42,7 +43,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		 */
 		OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
 		OAuth2User oAuth2User = delegate.loadUser(userRequest);
-		System.out.println(oAuth2User.toString());
 		/**
 		 * userRequest에서 registrationId 추출 후 registrationId으로 SocialType 저장
 		 * http://localhost:8080/oauth2/authorization/kakao에서 kakao가 registrationId
@@ -51,7 +51,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 		SocialType socialType = getSocialType(registrationId);
 		String userNameAttributeName = userRequest.getClientRegistration()
-			.getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName(); // OAuth2 로그인 시 키(PK)가 되는 값
+			.getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 		Map<String, Object> attributes = oAuth2User.getAttributes(); // 소셜 로그인에서 API가 제공하는 userInfo의 Json 값(유저 정보들)
 
 		// socialType에 따라 유저 정보를 통해 OAuthAttributes 객체 생성
@@ -81,18 +81,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		return SocialType.GOOGLE;
 	}
 
-	/**
-	 * SocialType과 attributes에 들어있는 소셜 로그인의 식별값 id를 통해 회원을 찾아 반환하는 메소드
-	 * 만약 찾은 회원이 있다면, 그대로 반환하고 없다면 saveUser()를 호출하여 회원을 저장한다.
-	 */
 	private Member getUser(OAuth2Attributes attributes, SocialType socialType) {
-		Member findUser = memberRepository.findBySocialTypeAndSocialId(socialType,
-			attributes.getOauth2UserInfo().getId()).orElse(null);
+		Optional<Member> existingMember = memberRepository.findByEmail(attributes.getOauth2UserInfo().getEmail());
 
-		if (findUser == null) {
+		if (existingMember.isPresent()) {
+			// 기존 사용자가 존재하면 기존 사용자 정보를 그대로 반환
+			return existingMember.get();
+		} else {
+			// 새로운 사용자인 경우 사용자를 생성하고 저장
 			return saveUser(attributes, socialType);
 		}
-		return findUser;
 	}
 
 	/**

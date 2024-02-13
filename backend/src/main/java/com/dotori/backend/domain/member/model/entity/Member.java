@@ -14,9 +14,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.dotori.backend.common.entity.BaseTimeEntity;
@@ -44,7 +42,7 @@ public class Member extends BaseTimeEntity {
 	@Column(name = "member_email")
 	private String email; // 이메일
 
-	@Column(unique = true)
+	@Column
 	private String nickname;
 
 	@Column(length = 100, name = "profile_img")
