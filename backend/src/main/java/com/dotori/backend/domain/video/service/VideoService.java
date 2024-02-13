@@ -63,6 +63,11 @@ public class VideoService {
 		Room room = roomRepository.findById(sceneVideoSaveRequest.getRoomId())
 			.orElseThrow(EntityNotFoundException::new);
 
+		// 재녹화를 위해 녹화된 비디오가 있으면 제거
+		videoManageService.getSceneVideByRoomAndSceneOrder(
+			room, sceneVideoSaveRequest.getSceneOrder()
+		).ifPresent(this::deleteSceneVideo);
+
 		videoManageService.saveSceneVideo(
 			room,
 			sceneVideoSaveRequest.getSceneOrder(),
@@ -89,8 +94,14 @@ public class VideoService {
 	}
 
 	@Transactional
+	public void deleteSceneVideo(SceneVideo sceneVideo) {
+		videoMergeService.deleteSceneVideoFile(sceneVideo.getPath());
+		videoManageService.deleteSceneVideos(List.of(sceneVideo));
+	}
+
+	@Transactional
 	public void deleteSceneVideos(List<SceneVideo> sceneVideos) {
-		videoMergeService.deleteMergedFile();
+		videoMergeService.deleteMergedFiles();
 		videoManageService.deleteSceneVideos(sceneVideos);
 	}
 

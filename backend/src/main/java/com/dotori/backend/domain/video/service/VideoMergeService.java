@@ -40,7 +40,11 @@ public class VideoMergeService {
 		return savedPath;
 	}
 
-	public void deleteMergedFile() {
+	public void deleteSceneVideoFile(String sceneVideoPath) {
+		FileUtil.deleteDirectory(sceneDirectory.toPath().resolve(sceneVideoPath).toFile());
+	}
+
+	public void deleteMergedFiles() {
 		FileUtil.deleteDirectory(sceneVideoDirectory);
 	}
 

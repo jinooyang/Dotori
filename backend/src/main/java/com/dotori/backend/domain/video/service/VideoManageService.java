@@ -3,6 +3,7 @@ package com.dotori.backend.domain.video.service;
 import static com.dotori.backend.domain.video.model.VideoMapper.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -56,6 +57,11 @@ public class VideoManageService {
 				.path(savedPath)
 				.build()
 		);
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<SceneVideo> getSceneVideByRoomAndSceneOrder(Room room, int sceneOrder) {
+		return sceneVideoRepository.getSceneVideoByRoomAndSceneOrder(room, sceneOrder);
 	}
 
 	@Transactional
