@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.dotori.backend.common.filter.JwtAuthenticationProcessingFilter;
+import com.dotori.backend.common.filter.TokenValidationFilter;
 import com.dotori.backend.common.handler.OAuth2LoginFailureHandler;
 import com.dotori.backend.common.handler.OAuth2LoginSuccessHandler;
 import com.dotori.backend.domain.member.repository.MemberRepository;
@@ -98,6 +99,7 @@ public class SecurityConfig {
 			.deleteCookies("JSESSIONID") // 쿠키 삭제
 
 			.and()
+			.addFilterBefore(tokenValidationFilter(), UsernamePasswordAuthenticationFilter.class)
 			.addFilterAfter(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
 			//소셜 로그인 설정
 			.oauth2Login()
@@ -146,6 +148,11 @@ public class SecurityConfig {
 		JwtAuthenticationProcessingFilter jwtAuthenticationFilter = new JwtAuthenticationProcessingFilter(jwtService,
 			memberRepository, redisService);
 		return jwtAuthenticationFilter;
+	}
+
+	@Bean
+	public TokenValidationFilter tokenValidationFilter() {
+		return new TokenValidationFilter(jwtService);
 	}
 
 }
