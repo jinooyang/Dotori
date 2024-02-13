@@ -51,6 +51,7 @@ public class Room extends BaseTimeEntity {
 	@Column(length = 50, name = "password")
 	private String password;
 
+	@Setter
 	@Column(name = "is_recording")
 	private Boolean isRecording;
 
