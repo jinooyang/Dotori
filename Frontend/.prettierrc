@@ -1,5 +1,5 @@
 {
-"editor.fomratOnSave": true,
+    "editor.fomratOnSave": true,
     "arrowParens": "avoid",
     "bracketSpacing": false,
     "endOfLine": "auto",
@@ -19,11 +19,11 @@
     "requirePragma": false,
     "insertPragma": false,
     "overrides": [
-      {
-        "files": "*.json",
-        "options": {
-          "printWidth": 200
+        {
+            "files": "*.json",
+            "options": {
+                "printWidth": 200
+            }
         }
-      }
     ]
-  }
+}
