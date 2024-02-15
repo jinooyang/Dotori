@@ -3,29 +3,29 @@
   <MainPageVideo/>
   <!-- <MainPageCarousel/> -->
 <!--  <div v-if="ovstore.isLoggedIn">로그인되어있음!</div>-->
-  <div class="row">
-    <div class="col-12">
+<!--  <div class="row">-->
+<!--    <div class="col-12">-->
 
-      <div class="row" style="height: 250px"></div>
-      <div ref="animatedTextRef1" class="animated-text">
-        <ElementOne />
-      </div>
-      <div class="row" style="height: 250px;"></div>
-      <div ref="animatedTextRef2" class="animated-text">
-        <ElementTwo />
-      </div>
-      <div class="row" style="height: 250px"></div>
-      <div ref="animatedTextRef3" class="animated-text">
-        <ElementThree />
-      </div>
-      <div class="row" style="height: 250px"></div>
-      <div ref="animatedTextRef4" class="animated-text">
-        <ElementFour />
-      </div>
-      <div class="row" style="height: 300px"></div>
+<!--      <div class="row" style="height: 250px"></div>-->
+<!--      <div ref="animatedTextRef1" class="animated-text">-->
+<!--        <ElementOne />-->
+<!--      </div>-->
+<!--      <div class="row" style="height: 250px;"></div>-->
+<!--      <div ref="animatedTextRef2" class="animated-text">-->
+<!--        <ElementTwo />-->
+<!--      </div>-->
+<!--&lt;!&ndash;      <div class="row" style="height: 250px"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;      <div ref="animatedTextRef3" class="animated-text">&ndash;&gt;-->
+<!--&lt;!&ndash;        <ElementThree />&ndash;&gt;-->
+<!--&lt;!&ndash;      </div>&ndash;&gt;-->
+<!--      <div class="row" style="height: 250px"></div>-->
+<!--      <div ref="animatedTextRef4" class="animated-text">-->
+<!--        <ElementFour />-->
+<!--      </div>-->
+<!--      <div class="row" style="height: 300px"></div>-->
 
-    </div>
-  </div>
+<!--    </div>-->
+<!--  </div>-->
 </template>
 
 <script setup>
@@ -44,10 +44,10 @@
 
   const axios = localAxios();
   //화면안에 요소가 들어오면 아래에서 올라오기
-  const animatedTextRef1 = ref(null);
-  const animatedTextRef2 = ref(null);
-  const animatedTextRef3 = ref(null);
-  const animatedTextRef4 = ref(null);
+  // const animatedTextRef1 = ref(null);
+  // const animatedTextRef2 = ref(null);
+  // const animatedTextRef3 = ref(null);
+  // const animatedTextRef4 = ref(null);
 
   const observeElement = element => {
     if (element instanceof Element) {
@@ -65,10 +65,10 @@
   };
 
   watchEffect(() => {
-    observeElement(animatedTextRef1.value);
-    observeElement(animatedTextRef2.value);
-    observeElement(animatedTextRef3.value);
-    observeElement(animatedTextRef4.value);
+    // observeElement(animatedTextRef1.value);
+    // observeElement(animatedTextRef2.value);
+    // observeElement(animatedTextRef3.value);
+    // observeElement(animatedTextRef4.value);
   });
 
   // const fetchMemberInfo = async () => {

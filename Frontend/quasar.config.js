@@ -9,6 +9,7 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 const {configure} = require('quasar/wrappers');
+require('dotenv').config()
 
 module.exports = configure(function (/* ctx */) {
     return {
@@ -60,16 +61,8 @@ module.exports = configure(function (/* ctx */) {
             // publicPath: '/',
             // analyze: true,
             env: {
-                VUE_APP_KAKAO_JS_KEY: 'f64a3357b4de741f1921dde6a43cfbc0',
-                VUE_APP_KAKAO_REDIRECT_URL:
-                    'http://localhost:8080/login/oauth2/code/kakao',
-                VUE_APP_GOOGLE_CLIENT_ID:
-                    '831236545250-pcc05tuiq2o87jpolrvtce1v09gjmq9i.apps.googleusercontent.com',
-                VUE_APP_GOOGLE_REDIRECT_URL:
-                    'http://localhost:8080/login/oauth2/code/google',
-                VUE_APP_NAVER_CLIENT_ID: 'WduH_0zvRQwvM1pdpq2c',
-                VUE_APP_NAVER_REDIRECT_URL:
-                    'http://localhost:8080/login/oauth2/code/naver',
+              API_URL : process.env.VUE_APP_API_URL,
+              OPENVIDU_URL : process.env.VUE_APP_OPENVIDU_URL
             },
             // rawDefine: {}
             // ignorePublicFolder: true,

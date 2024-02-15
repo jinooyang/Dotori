@@ -6,7 +6,7 @@ const routes = [
     },
     //로그인 관련 페이지
     {
-        path: '/login',
+        path: '/login-page',
         component: () => import('pages/LoginPage/LoginPage.vue'),
     },
 
@@ -23,10 +23,6 @@ const routes = [
                 path: 'collection',
                 component: () =>
                     import('pages/MyPage/MyVideoCollectionPage.vue'),
-            },
-            {
-                path: 'avatar',
-                component: () => import('pages/MyPage/MyAvatarPage.vue'),
             },
         ],
     },
@@ -64,18 +60,6 @@ const routes = [
     {
         path: '/end',
         component: () => import('pages/EndPage/EndPage.vue'),
-    },
-    {
-        path: '/test',
-        component: () => import('../webrtctest/WebRTCTestPage.vue'),
-    },
-    {
-        path: '/test2',
-        component: () => import('../webrtctest/testvideo.vue'),
-    },
-    {
-        path: '/test3',
-        component: () => import('../webrtctest/WebRTCTestPage2.vue'),
     },
 ];
 

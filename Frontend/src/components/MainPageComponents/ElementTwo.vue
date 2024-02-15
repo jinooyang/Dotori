@@ -2,8 +2,9 @@
   <!--  <hr style='border: solid yellow 3px' />-->
   <div class='row'>
 
-    <h2 class='npsfont q-mx-lg q-mt-lg q-mb-none col-10 offset-2' style='color: #282828'>동화책 속<br /> 주인공으로 변신!</h2>
-    <!--    <h4 class='npsfont q-my-none'>역할에 맞는 수많은 3D 아바타를 통해 아이들의 창의력과 집중력을 향상시킵니다</h4>-->
+    <h2 class='npsfont q-mx-lg q-mt-lg q-mb-none col-10 offset-2' style='color: #282828'>왜 '도토리'여야 하나요?</h2>
+    <h5 class='npsfont q-mx-lg q-mt-sm q-mb-none col-10 offset-2' style='color: #282828'>2. 친구들과 함께 놀고 싶은 아이들에게,<br />
+      함께 하는 즐거움을 선물합니다.</h5>
     <div class='col-8 offset-2'>
       <div class='row'>
         <div class='col-6 flex justify-center q-mt-lg'>
@@ -15,7 +16,7 @@
           <div style='width: 400px;height: 400px;' class='relative-position'>
             <div class='absolute-bottom-left flex justify-center items-center'
                  style='transform:translate(-10px,-80px)'>
-              <img src='src/assets/DotoriImages/jerry2d.png'
+              <img src='~assets/DotoriImages/jerry2d.png'
                    width='210px'
                    height='210px'
                    style='
@@ -29,7 +30,7 @@
             </div>
             <div class='absolute-bottom-right flex justify-center items-center'
                  style='transform:translate(-50px,-180px)'>
-              <img src='src/assets/DotoriImages/lion2d.png'
+              <img src='~assets/DotoriImages/lion2d.png'
                    width='210px'
                    height='210px'
                    style='object-fit: contain;
@@ -41,7 +42,7 @@
             </div>
             <div class='absolute-bottom-right flex justify-center items-center'
                  style='transform:translate(-45px,-20px)'>
-              <img src='src/assets/DotoriImages/racoon2d.png'
+              <img src='~assets/DotoriImages/racoon2d.png'
                    width='230px'
                    height='230px'
                    style='

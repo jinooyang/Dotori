@@ -1,170 +1,236 @@
 <template>
-    <q-page
-        style="
+  <headermypage />
+  <q-page
+    style="
             position: absolute;
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 67%;
+            left: 53%;
+            transform: translate(-45%, -48%);
         "
-    >
-        <div class="row flex justify-center">
-            <div class="text-h3 npsfont">내 정보</div>
+  >
+    <div class="row flex justify-center">
+<!--            <div class="text-h3 npsfont" style="color : #C7A96E">내 정보</div>-->
+    </div>
+    <hr class="q-my-md" style="border: white 1px solid" />
+    <div class="row ">
+      <div style="width: 310px;height: 310px;border-radius: 50%;border: #DFD0AA 5px solid;"
+           class="q-mb-lg flex justify-center items-center relative-position">
+        <img :src="memberInfo.profileImg" style="width: 300px;height: 300px;border-radius: 50%;object-fit: cover; " />
+        <q-btn
+          unelevated
+          rounded
+
+          class="absolute-bottom-right my-info-btn"
+          @click="openFilePopup" style = "transform: translate(-20px,-10px)"
+        ><h6 class = "q-ma-none">편집</h6></q-btn>
+        <div class = "absolute-top-left npsfont q-pa-xs "
+             style="
+             background: white;
+             border :5px solid white;
+              transform: rotate(-48.8deg) translate(-20px,24px);
+               border-radius: 100px;
+               color : #DFD0AA;">
+          <h5 class = "q-ma-none">사진</h5>
         </div>
-        <hr class="q-my-md" style="border: white 1px solid" />
-        <div class="profile-container column items-center">
-            <div
-                style="
-                    width: 210px;
-                    height: 210px;
-                    border-radius: 50%;
-                    border: #c7a96e 5px solid;
-                "
-                class="q-mb-lg flex justify-center items-center relative-position"
-            >
-                <img
-                    src="../../assets/MyPageImages/winter.png"
-                    style="
-                        width: 200px;
-                        height: 200px;
+      </div>
+<div class="q-mx-lg"></div>
+      <div class="relative-position row flex justify-center items-center" style="
+                        width: 310px;
+                        height: 310px;
                         border-radius: 50%;
                         object-fit: cover;
-                    "
-                />
-                <q-btn
-                    unelevated
-                    rounded
-                    label="편집"
-                    class="absolute-bottom-right my-info-btn"
-                ></q-btn>
-            </div>
-            <q-space></q-space>
-
-            <div class="input-box q-py-sm" style="border: 5px solid #c7a96e">
-                <div class="profile-info">
-                    <div class="q-my-sm row">
-                        <q-input
-                            dense
-                            label="프로필 이름"
-                            v-model="dummyUser.nickName"
-                            class="col-7 offset-1"
-                            color="brand"
-                        />
-                        <q-btn
-                            @click="changeNickname(dummyUser.nickName)"
-                            unelevated
-                            rounded
-                            class="my-info-btn col-2 offset-1"
-                            >변경</q-btn
-                        >
-                    </div>
-                    <!--          <div class=" q-my-sm row">-->
-                    <!--            <q-input dense label="프로필 이름" :model-value="dummyUser.name" class="col-7 offset-1" />-->
-                    <!--            <q-btn unelevated rounded class="my-info-btn col-2 offset-1">변경</q-btn>-->
-                    <!--          </div>-->
-                    <!--          <div class=" q-my-sm row">-->
-                    <!--            <q-input dense label="프로필 이름" :model-value="dummyUser.profileDescription" class="col-7 offset-1" />-->
-                    <!--            <q-btn unelevated rounded class="my-info-btn col-2 offset-1">변경</q-btn>-->
-                    <!--          </div>-->
-                </div>
-            </div>
+                        border : 5px solid #DFD0AA;
+                    ">
+        <div class = "absolute-top-left npsfont q-pa-xs "
+             style="
+             background: white;
+             border :5px solid white;
+              transform: rotate(-48.8deg) translate(-20px,24px);
+               border-radius: 100px;
+               color : #DFD0AA;">
+          <h5 class = "q-ma-none">이름</h5>
         </div>
-    </q-page>
+
+        <!--        닉네임 변경 인풋-->
+        <q-input dense label="새로운 닉네임을 입력하세요" v-model="nickName" color="brand"
+                 v-if="!isChange" />
+        <div class = "flex absolute-bottom-right" style="transform: translate(0px,-10px)">
+        <q-btn v-if="!isChange" @click="changeNickname(nickName)" unelevated rounded
+               class="my-info-save-btn btn-bg-save">저장
+        </q-btn>
+        <q-btn v-if="!isChange" @click="isChange = !isChange" unelevated rounded
+               class="my-info-btn btn-bg-cancel">취소
+        </q-btn>
+        </div>
+        <!--닉네임 보여주기 div-->
+        <div v-if="isChange"><h4 class="q-ma-none npsfont" style="color: #C7A96E">
+          {{ openViduStore.memberInfo.nickName }}</h4>
+        </div>
+        <q-btn v-if="isChange" @click="isChange= !isChange;nickName = openViduStore.memberInfo.nickName" unelevated rounded
+               class="my-info-btn absolute-bottom-right" style = "transform: translate(-20px,-10px)"><h6 class = "q-ma-none">편집</h6>
+        </q-btn>
+      </div>
+
+
+    </div>
+  </q-page>
 </template>
 
 <script setup>
-    import {ref, onMounted} from 'vue';
-    import {useRouter} from 'vue-router';
-    import {localAxios} from 'src/axios/http-commons';
+  import {useRouter} from 'vue-router';
+  import {localAxios, imgAxios} from 'src/axios/http-commons';
+  import {useOpenViduStore} from 'stores/openvidu';
+  import {storeToRefs} from 'pinia';
+  import {useQuasar} from 'quasar';
+  import Headermypage from 'components/CommonComponents/Headermypage.vue';
+  import {ref, watch} from 'vue';
 
-    const axios = localAxios();
-    const router = useRouter();
+  const $q = useQuasar();
+  const openViduStore = useOpenViduStore();
+  const {memberInfo} = storeToRefs(openViduStore);
+  const axios = localAxios();
+  const fileAxios = imgAxios();
+  const router = useRouter();
+  const nickName = ref('');
+  const isChange = ref(true);
+  // watch(openViduStore.memberInfo, (newItems, oldItems) => {
+  //   nickName.value = newItems.nickName;
+  // }, {deep: true});
+  const changeProfileImg = async (event) => {
+    const formData = new FormData();
+    console.log(event.target.files[0]);
+    const newProfileImg = event.target.files[0];
+    formData.append('profileImage', newProfileImg);
+    try {
+      const response = await fileAxios.put('/api/members/profile-image', formData);
+      memberInfo.value.profileImg = response.data.profileImage;
+      $q.notify({
+        color: 'white',
+        textColor: 'green-9',
+        message: '프로필 이미지가 변경되었어요!',
+        position: 'center',
+        timeout: 500,
+        icon: 'mdi-account-box-multiple-outline',
+      });
+      router.push('/my-page/info');
+    } catch (error) {
+      $q.loading.hide();
+      $q.notify({
+        color: 'white',
+        textColor: 'red-9',
+        message: '문제가 생겼어요! 다시 프로필 이미지를 변경해볼까요?',
+        position: 'center',
+        timeout: 500,
+        icon: 'mdi-alert-outline',
+      });
+    }
+  };
 
-    const dummyUser = ref({
-        profileImg: '111',
-        nickName: '',
-        profileDescription: '안녕하세요~',
-    });
+  const openFilePopup = async () => {
+    // 파일 선택 창 열기
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*'; // 이미지 파일만 선택 가능하도록 설정할 수 있음
+    fileInput.onchange = changeProfileImg;
+    fileInput.click();
+  };
+  const changeNickname = (newNickname) => {
+    axios
+      .put('/api/members/update_nickname', {}, { params: { newNickname } })
+      .then((response) => {
+        $q.notify({
+          color: 'white',
+          textColor: 'green-9',
+          message: '닉네임이 변경되었어요!',
+          position: 'center',
+          timeout: 500,
+          icon: 'mdi-account-box-multiple-outline',
+        });
+        openViduStore.memberInfo.nickName = newNickname;
+        isChange.value = !isChange.value;
+      })
+      .catch((error) => {
+        $q.loading.hide();
+        $q.notify({
+          color: 'white',
+          textColor: 'red-9',
+          message: '문제가 생겼어요! 다시 닉네임을 바꿔볼까요?',
+          position: 'center',
+          timeout: 500,
+          icon: 'mdi-alert-outline',
+        });
+      });
+  };
+  // const changeNickname = async (newNickname) => {
+  //   try {
+  //     const response = await axios.put(
+  //       '/api/members/update_nickname',
+  //       {},
+  //       {
+  //         params: {newNickname},
+  //       },
+  //     );
+  //     $q.notify({
+  //       color: 'white',
+  //       textColor: 'green-9',
+  //       message: '닉네임이 변경되었어요!',
+  //       position: 'center',
+  //       timeout: 500,
+  //       icon: 'mdi-account-box-multiple-outline',
+  //     });
+  //     router.push('/my-page/info');
+  //   } catch (error) {
+  //     $q.loading.hide();
+  //     $q.notify({
+  //       color: 'white',
+  //       textColor: 'red-9',
+  //       message: '문제가 생겼어요! 다시 닉네임을 바꿔볼까요?',
+  //       position: 'center',
+  //       timeout: 500,
+  //       icon: 'mdi-alert-outline',
+  //     });
+  //   }
+  // };
 
-    // API 호출하여 정보 가져오기
-    const fetchMemberInfo = async () => {
-        try {
-            const response = await axios.get(
-                '/api/members/detail',
-            );
-            const memberInfo = response.data;
 
-            dummyUser.value.nickName = memberInfo.nickName || '';
-        } catch (error) {
-            console.error('Error fetching member info:', error);
-        }
-    };
-
-    const changeProfileImg = async newProfileImg => {
-        try {
-            const response = await axiosInstance.put('/update_profileimg', {
-                newProfileImg,
-            });
-
-            if (response.status === 200) {
-                console.log('프로필 이미지 변경 성공');
-                router.push('/my-page/info');
-            } else {
-                console.error('프로필 이미지 변경 실패');
-            }
-        } catch (error) {
-            console.error('API 호출 중 오류 발생:', error);
-        }
-    };
-
-    const changeNickname = async newNickname => {
-        try {
-            console.log('함수 내 newNickname:', newNickname);
-            const response = await axios.put(
-                '/api/members/update_nickname',
-                {},
-                {
-                    params: {newNickname},
-                },
-            );
-            console.log('함수 내 newNickname:', newNickname);
-            if (response.status === 200) {
-                console.log('닉네임 변경 성공');
-                router.push('/my-page/info');
-            } else {
-                console.error('닉네임 변경 실패');
-            }
-        } catch (error) {
-            console.error('API 호출 중 오류 발생:', error);
-        }
-    };
-
-    onMounted(() => {
-        fetchMemberInfo();
-    });
 </script>
 
 <style lang="scss" scoped>
-    .my-info-btn {
-        background-color: #c7a96e;
-        font-family: 'NPSfontBold';
-        color: white;
-    }
+  .my-info-btn {
+    background-color: #DFD0AA;
+    font-family: 'NPSfontBold';
+    color: white;
+  }
+  .my-info-save-btn {
+    background-color: #C7A96E;
+    font-family: 'NPSfontBold';
+    color: white;
+  }
+.btn-bg-save{
+  background: #C7A96E;
+  border-radius: 100px 0px 0px 100px;
+}
+  .btn-bg-cancel{
+    background: #DFD0AA;
+    border-radius: 0px 100px 100px 0px;
+  }
+  .profile-bg-white {
+    background-color: white;
+    border-radius: 50%;
+    height: 200px;
+    width: 200px;
+    border: 5px solid #DFD0AA;
+  }
 
-    .profile-bg-white {
-        background-color: white;
-        border-radius: 50%;
-        height: 200px;
-        width: 200px;
-        border: 5px solid #c7a96e;
-    }
+  .light-brown-bg {
+    background-color: $dotori-deep-brown;
+  }
 
-    .light-brown-bg {
-        background-color: $dotori-deep-brown;
-    }
+  .input-box {
+    background: white;
+    border-radius: $dotori-border-radius;
+    width: 100%;
+  }
 
-    .input-box {
-        background: white;
-        border-radius: $dotori-border-radius;
-        width: 30%;
-    }
+
 </style>

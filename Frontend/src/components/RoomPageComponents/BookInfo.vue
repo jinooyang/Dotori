@@ -8,10 +8,10 @@
 
     <div style='height: 100%' class='background-yellow q-pa-sm '>
       <div class='column  flex justify-center items-center' style="width: 100%">
-        <img :src='props.bookInfo.bookImg' class='bookimg q-pb-sm' style="width: 100%;object-fit: fill;">
+        <img :src='props.bookInfo.bookImg' class='bookimg' style="width: 100%;object-fit: fill;">
       </div>
-      <hr class='q-ma-none' />
-      <div class=' column q-pa-sm background-white' style="overflow: auto">
+
+      <div class=' column q-pa-sm background-white' style="overflow: auto;border-radius: 0px 0px 13px 13px">
         제목 : {{bookInfo.title}}<br />
         저자 :  {{bookInfo.author}}<br />
         필요 인원 : {{bookInfo.roleCnt}}<br />
@@ -25,14 +25,14 @@
 
 <style scoped>
   .background-brown {
-    background: #C7A96E;
-    border-radius: 20px 20px 20px 20px;
+    background: rgba(218, 201, 157, 0.87);
+    border-radius: 20px;
 
   }
 
   .background-yellow {
     background: white;
-    border-radius: 20px 20px 20px 20px;
+    border-radius: 15px;
   //border: dashed #cc765a 5px;
   }
 
@@ -47,7 +47,7 @@
   }
 
   .bookimg {
-    border-radius: 20px 20px 20px 20px;
+    border-radius: 13px;
   //border: solid #cc765a 2px; height: 20em;
   }
 </style>

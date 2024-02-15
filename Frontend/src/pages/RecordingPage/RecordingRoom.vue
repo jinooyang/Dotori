@@ -1,7 +1,7 @@
 <template>
   <Header />
   <!--  <h1>{{ myAvatar }}</h1>-->
-  role : {{ ovstore.myRole }}
+  <!--  role : {{ ovstore.myRole }}-->
   <div class='row flex justify-center q-px-none'>
     <div class='col-11'>
       <div class='entire-container row'>
@@ -90,8 +90,15 @@
   //페이지를 이동할때마다 현재 페이지의 역할 목록을 초기화 시켜준다
   //스크립트 또한 초기화 시켜준다
   const moveToPage = (nextPage) => {
-    if (ovstore.onAir) {
-      alert('녹화중에는 이동할 수 없습니다');
+    if (ovstore.onAir && ovstore.isHost) {
+      $q.notify({
+        color: 'white',
+        textColor: 'red-9',
+        message: '녹화중에는 이동할 수 없습니다',
+        position: 'center',
+        timeout: 500,
+        icon: 'mdi-alert-outline',
+      });
       return;
     }
 
@@ -152,18 +159,33 @@
     console.log(ovstore.bookDetail);
     //총 페이지 수를 저장한다
     recStore.totalPages = ovstore.bookDetail.scenes.length;
+    recStore.videoLink = [];
+    for (let i in recStore.totalPages) {
+      recStore.videoLink.push('');
+    }
     //session 설정 추가
     //페이지이동 버튼이 눌리면 다같이 페이지를 이동한다
     ovstore.session.on('signal:page', (event) => {
       const nextPage = Number(event.data);
       moveToPage(nextPage);
     });
-    ovstore.session.on('signal:recfin', (event) => {
-      const recHistory = Number(event.data);
-      recStore.updateRecHistory(recHistory);
+    ovstore.session.on('signal:recordingSuccess', (event) => {
+      // const recHistory = Number(event.data);
+      $q.notify({
+        color: 'white',
+        textColor: 'green-9',
+        message: '녹화가 성공적으로 되었어요!',
+        position: 'center',
+        timeout: 500,
+      });
+      recStore.videoLink[curPage.value - 1] = event.data;
+      console.log((curPage.value - 1) + '페이지에 비디오 링크 저장 : ' + event.data.url);
+      recStore.recComplete(curPage.value);
     });
     ovstore.session.on('signal:end', (event) => {
-      if (ovstore.isPublished) unpublish();
+      if (ovstore.isPublished) {
+        ovstore.unpublish()
+      }
       router.push('/end');
     });
 
@@ -186,7 +208,7 @@
       });
     });
 
-    ovstore.session.on('signal:recordingStartError',(event)=>{
+    ovstore.session.on('signal:recordingStartError', (event) => {
       //녹화 시작에 문제가 생겼을 경우
       $q.loading.hide();
       $q.notify({
@@ -198,17 +220,8 @@
       });
     });
 
-    ovstore.session.on('signal:recordingSavedSuccess',(event)=>{
-      $q.notify({
-        color: 'white',
-        textColor: 'green-9',
-        message: '녹화가 성공적으로 되었어요!',
-        position: 'center',
-        timeout: 500,
-      });
-    });
 
-    ovstore.session.on('signal:recordingSavedFailed',(event)=>{
+    ovstore.session.on('signal:recordingSavedFailed', (event) => {
       $q.notify({
         color: 'white',
         textColor: 'red-9',

@@ -11,7 +11,7 @@
     router.push('/my-page/info');
   };
   const moveLoginPage = () => {
-    router.push('/login');
+    router.push('/login-page');
   };
   const moveMainPage = () => {
     router.push('/');
@@ -52,18 +52,20 @@
 </script>
 <template>
   <div class='row header-bg q-pt-sm q-pb-sm'  id='mainPageHeader'>
-    <!--    <div class="col-4 offset-0 flex justify-center items-center" style="cursor: pointer">-->
-    <!--    </div>-->
+
 
     <!--페이지 위치-->
-    <div class='col-8 offset-0 flex justify-center items-start'>
-      <img src='../../assets/DotoriImages/dotorisq.png' style='cursor:pointer' alt='logo' width='30%'
+    <div class='col-4 offset-0 flex justify-start items-start'>
+      <img src='../../assets/DotoriImages/dotorisq.png' style='transform: translate(30px,0px); cursor:pointer' alt='logo' width='25%'
            @click='moveMainPage' />
     </div>
 
+        <div class="col-4 offset-0 flex justify-center items-center" style="cursor: pointer">
+        </div>
+
     <!-- 마이페이지와 로그인-->
     <div class='col-2 flex items-center justify-end npsfont' v-if='ovstore.isLoggedIn'>
-      <q-btn flat class='text-h7 q-ma-none' style='transform: translate(70px,0px)' color='brand' @click='moveMyPage'>
+      <q-btn flat class='text-h7 q-ma-none' style='transform: translate(110px,0px)' color='brand' @click='moveMyPage'>
         <span class='text-border' style='color: black'>마이페이지</span>&nbsp&nbsp
         <svg
           xmlns='http://www.w3.org/2000/svg'
@@ -84,7 +86,7 @@
       class='col-2 flex items-center justify-start npsfont'
       v-if='ovstore.isLoggedIn'
     >
-      <q-btn flat class='text-h7 q-ma-none' style='transform: translate(70px,0px)' color='brand' @click='logout'
+      <q-btn flat class='text-h7 q-ma-none' style='transform: translate(110px,0px)' color='brand' @click='logout'
       ><span class='text-border' style='color: black'>로그아웃</span>
         &nbsp&nbsp
         <svg
@@ -140,7 +142,7 @@
   }
 
   .text-border {
-    text-shadow: -1px 0px white, 0px 1px white, 1px 0px white, 0px -1px white;
+    //text-shadow: -1px 0px white, 0px 1px white, 1px 0px white, 0px -1px white;
   }
 
   @font-face {

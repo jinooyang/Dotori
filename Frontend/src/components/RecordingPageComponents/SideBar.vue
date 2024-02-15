@@ -28,7 +28,7 @@
   const thumbStyle = {
     right: '1.5px',
     borderRadius: '5px',
-    backgroundColor: '#C7A96E',
+    backgroundColor: 'rgba(218, 201, 157, 0.87)',
     width: '5px',
     opacity: 0.75,
   };

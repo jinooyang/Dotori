@@ -6,18 +6,18 @@
         <RoomTitle :roomInfo='roomInfo'></RoomTitle>
       </div>
       <div class='row'>
-        <div class='col-8 q-pa-sm'>
+        <div class='col-8 q-pt-sm q-pl-sm q-pb-sm' >
           <PlayerList></PlayerList>
         </div>
-        <div class='col-4 q-pa-sm'>
+        <div class='col-4 q-pa-sm '>
           <BookInfo :bookInfo='bookDetail.book'></BookInfo>
         </div>
       </div>
       <div class='row'>
-        <div class='col-8 q-pa-sm' style='height: 210px'>
+        <div class='col-8 q-pl-sm q-pb-sm' style='height: 210px'>
           <RoomChat :playerList='playerList' :memberId='memberId'></RoomChat>
         </div>
-        <div class='col-4 q-pa-sm'>
+        <div class='col-4 q-pl-sm q-pr-sm q-pb-sm'>
           <StartReady></StartReady>
         </div>
       </div>
@@ -113,18 +113,29 @@
     const player = {
       name: memberInfo.value.nickName,
       memberId: memberId.value,
-      profileImg: 'src/assets/MyPageImages/winter.png',
+      profileImg: memberInfo.value.profileImg,
       roleName: '역할 선택하기',
       roleIndex: 5,
       readyState: false,
     };
 
-    if (isHost.value) {
-      playerList.value.push(player);
-    } else {
-      sendingIncomingData.value.player = player;
-      sendIncomingInfoToOpenVidu();
+
+    let check = true;
+    playerList.value.forEach((user) => {
+      if (user.memberId === player.memberId) {
+        check = false;
+      }
+    })
+
+    if (check) {
+      if (isHost.value) {
+        playerList.value.push(player);
+      } else {
+        sendingIncomingData.value.player = player;
+        sendIncomingInfoToOpenVidu();
+      }
     }
+
   })
 
 
