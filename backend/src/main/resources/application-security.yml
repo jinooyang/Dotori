@@ -1,0 +1,68 @@
+spring:
+  config:
+    import:
+      - optional:file:env/secret-key.env[.properties]
+  security:
+    oauth2:
+      client:
+        provider:
+          kakao:
+            authorization-uri: ${KAKAO_AUTHORIZATION_URI}
+            token-uri: ${KAKAO_TOKEN_URI}
+            user-info-uri: ${KAKAO_USER_INFO_URI}
+            user-name-attribute: ${KAKAO_USER_NAME_ATTRIBUTE}
+          naver:
+            authorization-uri: ${NAVER_AUTHORIZATION_URI}
+            token-uri: ${NAVER_TOKEN_URI}
+            user-info-uri: ${NAVER_USER_INFO_URI}
+            user-name-attribute: ${NAVER_USER_NAME_ATTRIBUTE}
+        registration:
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            scope: ${KAKAO_SCOPE}
+            client-name: ${KAKAO_CLIENT_NAME}
+            authorization-grant-type: ${KAKAO_AUTHORIZATION_GRANT_TYPE}
+            client-authentication-method: ${KAKAO_CLIENT_AUTHENTICATION_METHOD}
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: ${GOOGLE_SCOPE}
+          naver:
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
+            redirect-uri: ${NAVER_REDIRECT_URI}
+            scope: ${NAVER_SCOPE}
+            client-name: ${NAVER_CLIENT_NAME}
+            authorization-grant-type: ${NAVER_AUTHORIZATION_GRANT_TYPE}
+
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+
+jwt:
+  secretKey: ${SECRET_KEY}
+  access:
+    expiration: ${ACCESS_EXPIRATION}
+    header: ${ACCESS_HEADER}
+  refresh:
+    expiration: ${REFRESH_EXPIRATION}
+    header: ${REFRESH_HEADER}
+
+server:
+  port: ${SERVER_PORT}
+
+dotori:
+  domain: ${DOTORI_DOMAIN}
+
+logging:
+  level:
+    org:
+      springframework:
+        security: trace
+        web: trace
+        oauth2:
+          client: trace
+        data:
+          redis: trace

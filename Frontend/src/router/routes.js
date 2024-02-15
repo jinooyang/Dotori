@@ -1,20 +1,25 @@
 const routes = [
-    {
-        path: '/',
-        component: () => import('layouts/MainLayout.vue'),
-    },
-    {
-        path: '/login',
-        component: () => import('pages/LoginPage.vue'),
-    },
+  {
+    path: '/',
+    component: () => import('layouts/MainLayout.vue'),
+  },
+  {
+    path: '/login',
+    component: () => import('pages/LoginPage.vue'),
+  },
   {
     path: '/modal',
     component: () => import('pages/RoomMakingModal2.vue'),
   },
-    {
-        path: '/signup',
-        component: () => import('pages/SingupPage.vue'),
-    },
+  {
+    path: '/signup',
+    component: () => import('pages/SingupPage.vue'),
+  },
+  {
+    path: '/kakaologin',
+    component: () => import('pages/SocialLogin/KakaoLogin.vue'),
+  },
+
   {
     path: '/my-page',
     component: () => import('layouts/MyPageLayout.vue'),
@@ -30,7 +35,7 @@ const routes = [
       {
         path: 'avatar',
         component: () => import('pages/MyAvatarPage.vue'),
-      }
+      },
     ],
   },
   {
@@ -41,14 +46,14 @@ const routes = [
     path: '/List',
     component: () => import('layouts/List/Index.vue'),
     children: [
-      { path: '', component: () => import('pages/List/IndexPage.vue')},
+      {path: '', component: () => import('pages/List/IndexPage.vue')},
     ],
   },
   {
     path: '/book',
     component: () => import('layouts/List/Index.vue'),
     children: [
-      { path: '', component: () => import('pages/List/BookIndexPage.vue')},
+      {path: '', component: () => import('pages/List/BookIndexPage.vue')},
     ],
   },
   {

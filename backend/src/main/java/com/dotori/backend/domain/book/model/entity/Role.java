@@ -1,5 +1,6 @@
 package com.dotori.backend.domain.book.model.entity;
 
+import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
@@ -25,7 +26,7 @@ public class Role {
 	@GeneratedValue(strategy = IDENTITY)
 	private Long roleId;
 
-	@ManyToOne
+	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "book_id")
 	private Book book;
 
@@ -35,10 +36,14 @@ public class Role {
 	@Column(length = 100, name = "mask_path")
 	private String maskPath;
 
+	@Column(length = 100, name = "mask_thumbnail_path")
+	private String maskThumbnailPath;
+
 	@Builder
-	public Role(Book book, String name, String maskPath) {
+	public Role(Book book, String name, String maskPath, String maskThumbnailPath) {
 		this.book = book;
 		this.name = name;
 		this.maskPath = maskPath;
+		this.maskThumbnailPath = maskThumbnailPath;
 	}
 }

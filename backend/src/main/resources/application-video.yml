@@ -1,0 +1,16 @@
+spring:
+  config:
+    import:
+      - optional:file:env/video.env[.properties]
+
+videos:
+  path:
+    video: ${VIDEO_DIRECTORY_PATH}
+    scene: ${SCENE_DIRECTORY_PATH}
+    chunk: ${CHUNK_DIRECTORY_PATH}
+
+images:
+  path:
+    profile:
+      save: ${PROFILE_IMAGE_SAVE_PATH}
+      db: ${PROFILE_IMAGE_DB_PATH}

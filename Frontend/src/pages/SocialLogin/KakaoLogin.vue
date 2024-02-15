@@ -19,10 +19,10 @@
 </template>
 
 <script setup>
-    import {onBeforeMount} from 'vue';
-    import useSocialLogin from '@/composables/socialLogin';
+import {onBeforeMount} from 'vue';
+import useSocialLogin from '@/composables/socialLogin';
 
-    const {doSocialLogin, loginResult} = useSocialLogin();
+const {doSocialLogin, loginResult} = useSocialLogin();
 
     onBeforeMount(() => {
         doSocialLogin('KAKAO');

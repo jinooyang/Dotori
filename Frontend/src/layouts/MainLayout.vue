@@ -1,6 +1,6 @@
 <template>
     <Header />
-    <div class="q-pa-md">
+    <div class="q-md">
         <q-carousel
             arrows
             infinite
@@ -8,7 +8,7 @@
             navigation
             animated
             v-model="slide"
-            height="570px"
+            height="600px"
         >
             <q-carousel-slide
                 name="first"
@@ -63,18 +63,28 @@
             </q-carousel-slide>
         </q-carousel>
     </div>
-    <div class="q-pa-md">
-        <q-parallax :height="700" :speed="1.2">
+    <div class="q-md">
+        <q-parallax :height="900" :speed="0.3">
             <template v-slot:media>
-                <img src="https://cdn.quasar.dev/img/parallax1.jpg" />
+                <img src="../assets/login/loginbackground.png" />
             </template>
 
-            <h1 class="text-white">Docks</h1>
+            <div
+                ref="animatedText"
+                class="absolute-top text-left text-black text-h3 text2"
+            >
+                왜 도토리에요?
+            </div>
         </q-parallax>
     </div>
     <div class="col-6">
         <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
-            <div class="absolute-top text-subtitle1 text-center">Caption</div>
+            <div
+                ref="animatedText2"
+                class="absolute-top text-h3 text-left text3"
+            >
+                다양한 탈
+            </div>
         </q-img>
     </div>
     <div>
@@ -84,60 +94,88 @@
 
 <script setup>
     import Header from 'layouts/Header.vue';
-    import {ref} from 'vue';
+    import {ref, onMounted, watchEffect} from 'vue';
 
     const slide = ref('first');
+    //메인페이지 캐러셀 자동반복
     const autoplay = ref(true);
+    //화면안에 요소가 들어오면 아래에서 올라오기
+    const animatedTextRef = ref(null);
+    const animatedTextRef2 = ref(null);
 
-    // const bounceImage = el => {
-    //     // in this example, when the `<div>` comes into view,
-    //     // we bounce it for 2 seconds
+    onMounted(() => {
+        // animatedTextRef.value에 직접 DOM 요소를 할당
+        animatedTextRef.value = document.querySelector('.text2');
+        animatedTextRef2.value = document.querySelector('.text3');
+    });
 
-    //     el.classList.add('animate-bounce');
+    const observeElement = element => {
+        if (element instanceof Element) {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        element.classList.add('entered');
+                    } else {
+                        element.classList.remove('entered');
+                    }
+                });
+            });
 
-    //     setTimeout(() => {
-    //         // we make sure the node is still in DOM
-    //         // (user hasn't navigated away from the Vue component
-    //         // rendering our `<div>`)
-    //         // so we don't generate an error
-    //         if (document.body.contains(el)) {
-    //             // then remove the helper class to
-    //             // stop bouncing
-    //             el.classList.remove('animate-bounce');
-    //         }
-    //     }, 2000);
-    // };
+            observer.observe(element);
+        }
+    };
+    watchEffect(() => {
+        observeElement(animatedTextRef.value);
+        observeElement(animatedTextRef2.value);
+    });
 </script>
 
-<!--<style lang="sass" scoped>-->
-<!--.custom-caption-->
-<!--  text-align: center-->
-<!--  padding: 400px-->
-<!--  color: text-black-->
+<style lang="scss" scoped>
+    .custom-caption {
+        text-align: center;
+        padding: 12px;
+        color: white;
+    }
 
-<!--.custom-button-->
-<!--      text-align: center-->
-<!--      padding: 70px-->
+    .custom-button {
+        text-align: center;
+        padding: 70px;
+    }
 
-<!--  .animate-bounce-->
-=======
-<!--    .custom-caption-->
-<!--      text-align: center-->
-<!--      padding: 400px-->
-<!--      //color: text-black-->
+    .custom-caption {
+        text-align: center;
+        padding: 400px;
+        color: black;
+    }
 
-<!--    .custom-button-->
-<!--      text-align: center-->
-<!--      padding: 70px-->
+    .custom-button {
+        text-align: center;
+        padding: 70px;
+    }
+    // 글씨 나타나기
+    .text2 {
+        padding: 200px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    }
 
-<!--    .animate-bounce-->
-<!--      animation: q-bounce 2s infinite-->
+    .text2.entered {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    // .text3 {
+    // padding: 20px;
+    // opacity: 0;
+    // transform: translateY(20px);
+    // transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    // }
 
-<!--    @keyframes q-bounce-->
-<!--      0%, 20%, 50%, 80%, 100%-->
-<!--        transform: translateY(0)-->
-<!--      40%-->
-<!--        transform: translateY(-30px)-->
-<!--      60%-->
-<!--        transform: translateY(-15px)-->
-<!--</style>-->
+    // .text3.entered {
+    // opacity: 1;
+    // transform: translateY(0);
+    // }
+    .q-img__content > div {
+        background: none !important; /* 배경을 없애는 스타일 */
+    }
+</style>

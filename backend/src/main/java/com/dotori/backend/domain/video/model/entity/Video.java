@@ -29,6 +29,12 @@ public class Video extends BaseTimeEntity {
 	private String path;
 
 	@Builder
+	public Video(Long videoId, String path) {
+		this.videoId = videoId;
+		this.path = path;
+	}
+
+	@Builder
 	public Video(String path) {
 		this.path = path;
 	}
