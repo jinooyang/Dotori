@@ -1,0 +1,56 @@
+<html>
+<script src="openvidu-browser-2.29.0.min.js"></script>
+<head>
+  <style>
+    html {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-image: url("https://dotori.online/images/scenes/lion-and-rat/scene_5.png");
+    }
+
+    #videos {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      text-align: center;
+      max-height: 100%; /* videos의 높이가 background의 높이를 초과하지 않게 합니다 */
+    }
+
+    #videos video {
+      margin: 0;
+      padding: 0;
+      width: 200px;  /* 비디오의 너비를 설정합니다. 필요에 따라 조정해주세요. */
+      height: auto;  /* 비디오의 높이는 너비에 맞춰 자동으로 조정됩니다. */
+    }
+  </style>
+</head>
+
+<body>
+<div id="videos"></div>
+</body>
+<script>
+  var url = new URL(window.location.href);
+  var SESSION_ID = url.searchParams.get("sessionId");
+  var SECRET = url.searchParams.get("secret");
+  // WARNING! Use "ws://" as protocol instead of "wss://" if you are using
+  // the OpenVidu dev container (openvidu/openvidu-dev) through localhost
+  var TOKEN = 'wss://' + location.host + '?sessionId=' + SESSION_ID + '&secret=' + SECRET + '&recorder=true';
+
+  var OV = new OpenVidu();
+  var session = OV.initSession();
+
+  session.on('streamCreated', (event) => {
+    session.subscribe(event.stream, 'videos');
+  })
+  session.connect(TOKEN)
+    .then(() => { console.log('Recorder participant connected') })
+    .catch(error => { console.error(error) });
+</script>
+</html>
+
