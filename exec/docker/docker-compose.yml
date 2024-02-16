@@ -87,7 +87,6 @@ services:
       - ./dotori-ov/custom-layout:/opt/openvidu/custom-layout
       - ./dotori-ov/videos/scenes:/home/videos/scenes
       - "/var/run/docker.sock:/var/run/docker.sock"
-#      - ./dotori-ov:/opt/openvidu/
 
     networks:
       - dotori-network
@@ -105,12 +104,8 @@ services:
       - ./dotori-nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
       - ./dotori-nginx/videos:/home/videos
       - ./dotori-nginx/images:/home/images
-#      - ./dotori-nginx/videos:/usr/share/nginx/html/videos
-#      - ./dotori-nginx/images:/usr/share/nginx/html/images
       - dotori-video:/home/videos
       - dotori-image:/home/images
-#      - dotori-video:/usr/share/nginx/html/videos
-#      - dotori-image:/usr/share/nginx/html/images
     networks:
       - dotori-network
     ports:
