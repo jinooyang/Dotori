@@ -1,0 +1,18 @@
+insert into dotori.scene (scene_id, background_image, scene_order, book_id)
+values  (1, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_1.png', 1, 1),
+        (2, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_2.png', 2, 1),
+        (3, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_3.png', 3, 1),
+        (4, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_4.png', 4, 1),
+        (5, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_5.png', 5, 1),
+        (6, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_6.png', 6, 1),
+        (7, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_7.png', 7, 1),
+        (8, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_8.png', 8, 1),
+        (9, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_9.png', 9, 1),
+        (10, 'https://dotori.online/images/scenes/rabbit-and-turtle/scene_10.png', 10, 1),
+        (11, 'https://dotori.online/images/scenes/lion-and-rat/scene_1.png', 1, 2),
+        (12, 'https://dotori.online/images/scenes/lion-and-rat/scene_2.png', 2, 2),
+        (13, 'https://dotori.online/images/scenes/lion-and-rat/scene_3.png', 3, 2),
+        (14, 'https://dotori.online/images/scenes/lion-and-rat/scene_4.png', 4, 2),
+        (15, 'https://dotori.online/images/scenes/lion-and-rat/scene_5.png', 5, 2),
+        (16, 'https://dotori.online/images/scenes/lion-and-rat/scene_6.png', 6, 2),
+        (17, 'https://dotori.online/images/books/test.png', 1, 14);

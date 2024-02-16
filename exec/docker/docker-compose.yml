@@ -1,0 +1,120 @@
+version: '3'
+
+name: 'dotori-local'
+
+networks:
+  dotori-network:
+
+volumes:
+  dotori-video:
+  dotori-image:
+
+services:
+  dotori-mysql:
+    container_name: "dotori-mysql"
+    image: mysql:8.0.32
+    networks:
+      - dotori-network
+    ports:
+      - "3306:3306"
+    env_file:
+      - docker-db.env
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - ./dotori-mysql:/var/lib/mysql
+      - ./initial:/docker-entrypoint-initdb.d
+    command:
+      - "mysqld"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    restart: no
+  dotori-redis:
+    container_name: "dotori-redis"
+    image: redis:latest
+    networks:
+      - dotori-network
+    ports:
+      - "6379:6379"
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - ./dotori-redis/data:/data
+      - ./dotori-redis/conf:/etc/redis/redis.conf
+    restart: no
+  dotori-front:
+    container_name: "dotori-front"
+    build:
+      dockerfile: "dockerfile"
+      context: "../../Frontend"
+    image: dotori-front-image
+    networks:
+      - dotori-network
+    ports:
+      - "9000:9000"
+    environment:
+      TZ: Asia/Seoul
+    restart: no
+  dotori-back:
+    container_name: "dotori-back"
+    build:
+      dockerfile: "dockerfile"
+      context: "../../backend"
+    image: dotori-back-image
+    volumes:
+      - dotori-video:/home/videos
+      - dotori-image:/home/images
+    networks:
+      - dotori-network
+    ports:
+      - "8080:8080"
+    env_file:
+      - dotori-back/env/db.env
+      - dotori-back/env/test-db.env
+      - dotori-back/env/secret-key.env
+      - dotori-back/env/video.env
+    environment:
+      TZ: Asia/Seoul
+    depends_on:
+      - dotori-mysql
+      - dotori-redis
+    restart: no
+  dotori-ov:
+    container_name: "dotori-ov"
+    image: openvidu/openvidu-dev:2.29.0
+    volumes:
+      - dotori-video:/home/videos
+      - ./dotori-ov/custom-layout:/opt/openvidu/custom-layout
+      - ./dotori-ov/videos/scenes:/home/videos/scenes
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+    networks:
+      - dotori-network
+    ports:
+      - "4443:4443"
+      - "8888:8888"
+      - "9091:9091"
+    env_file:
+      - ./dotori-ov/ov.env
+    restart: no
+  dotori-nginx:
+    container_name: "dotori-nginx"
+    image: nginx:1.18.0
+    volumes:
+      - ./dotori-nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
+      - ./dotori-nginx/videos:/home/videos
+      - ./dotori-nginx/images:/home/images
+      - dotori-video:/home/videos
+      - dotori-image:/home/images
+    networks:
+      - dotori-network
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - dotori-mysql
+      - dotori-redis
+      - dotori-back
+      - dotori-front
+      - dotori-ov
+    restart: no
