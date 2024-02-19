@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,7 @@ public class SceneService {
 		return toSceneDetailDto(scene);
 	}
 
+	@Cacheable(value = "sceneDetails", key = "#bookId")
 	@Transactional(readOnly = true)
 	public List<SceneDetailDto> getSceneDetailsByBookId(Long bookId) {
 		return sceneRepository.findByBook_BookId(bookId)

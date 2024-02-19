@@ -1,15 +1,19 @@
 package com.dotori.backend.domain.book.model.dto;
 
+import static lombok.AccessLevel.*;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor(access = PRIVATE)
+@AllArgsConstructor
 public class ScriptDto {
-	private final Long scriptId;
-	private final RoleDto roleDto;
-	private final int scriptOrder;
-	private final String content;
+	private Long scriptId;
+	private RoleDto roleDto;
+	private int scriptOrder;
+	private String content;
 }

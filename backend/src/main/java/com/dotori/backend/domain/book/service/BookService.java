@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.dotori.backend.domain.book.model.dto.BookDto;
@@ -27,6 +28,7 @@ public class BookService {
 
 	private final RoleRepository roleRepository;
 
+	@Cacheable(value = "books")
 	public List<BookDto> getBooks() {
 		return bookRepository.findAll()
 			.stream()
@@ -34,6 +36,7 @@ public class BookService {
 			.collect(Collectors.toList());
 	}
 
+	@Cacheable(value = "book", key = "#bookId")
 	public BookDto getBook(Long bookId) {
 		Book book = bookRepository.findById(bookId).orElseThrow(
 			() -> new EntityNotFoundException("해당하는 책이 존재하지 않습니다.")
@@ -42,6 +45,7 @@ public class BookService {
 		return BookMapper.toBookDto(book);
 	}
 
+	@Cacheable(value = "roles", key = "#bookId")
 	public List<RoleDto> getRolesByBookId(Long bookId) {
 		List<Role> roleList = roleRepository.findByBook_BookId(bookId);
 
