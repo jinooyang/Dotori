@@ -1,17 +1,21 @@
 package com.dotori.backend.domain.book.model.dto;
 
+import static lombok.AccessLevel.*;
+
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor(access = PRIVATE)
+@AllArgsConstructor
 public class SceneDetailDto {
-	private final Long sceneId;
-	private final int sceneOrder;
-	private final String backgroundImage;
-	private final List<ScriptDto> scriptDto;
+	private Long sceneId;
+	private int sceneOrder;
+	private String backgroundImage;
+	private List<ScriptDto> scriptDto;
 }
